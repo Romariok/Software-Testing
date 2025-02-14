@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MathUtils {
     public static double arccosSeries(double x, int terms) {
-        if (x < -1 || x > 1) throw new IllegalArgumentException("x must be in [-1,1]");
+        if (!(x>-1 && x<1)) throw new IllegalArgumentException("x must be in (-1,1)");
         
         double result = Math.PI / 2;  // First term π/2
         
@@ -42,6 +42,8 @@ class MathUtilsTest {
     @Test
     void testArccosSeries() {
         assertEquals(Math.acos(0), MathUtils.arccosSeries(0, 85), 1e-6);
+        assertEquals(Math.acos(0.005), MathUtils.arccosSeries(0.005, 85), 1e-6);
+        assertEquals(Math.acos(-0.005), MathUtils.arccosSeries(-0.005, 85), 1e-6);
         assertEquals(Math.acos(0.25), MathUtils.arccosSeries(0.25, 85), 1e-6);
         assertEquals(Math.acos(-0.25), MathUtils.arccosSeries(-0.25, 85), 1e-6);
         assertEquals(Math.acos(0.52), MathUtils.arccosSeries(0.52, 85), 1e-6);
@@ -50,7 +52,7 @@ class MathUtilsTest {
         assertEquals(Math.acos(-0.75), MathUtils.arccosSeries(-0.75, 85), 1e-6);
         assertEquals(Math.acos(0.95), MathUtils.arccosSeries(0.95, 85), 1e-6);
         assertEquals(Math.acos(-0.95), MathUtils.arccosSeries(-0.95, 85), 1e-6);
-        assertEquals(Math.acos(-1), MathUtils.arccosSeries(-1, 85), 1e-2);
-        assertEquals(Math.acos(1), MathUtils.arccosSeries(1, 85), 1e-2);
+        assertEquals(Math.acos(-1), MathUtils.arccosSeries(-1, 85), 1e-6);
+        assertEquals(Math.acos(1), MathUtils.arccosSeries(1, 85), 1e-6);
     }
 }
