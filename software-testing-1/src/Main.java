@@ -50,5 +50,7 @@ class MathUtilsTest {
         assertEquals(Math.acos(-0.75), MathUtils.arccosSeries(-0.75, 85), 1e-6);
         assertEquals(Math.acos(0.95), MathUtils.arccosSeries(0.95, 85), 1e-6);
         assertEquals(Math.acos(-0.95), MathUtils.arccosSeries(-0.95, 85), 1e-6);
+        assertEquals(Math.acos(-1), MathUtils.arccosSeries(-1, 85), 1e-2);
+        assertEquals(Math.acos(1), MathUtils.arccosSeries(1, 85), 1e-2);
     }
 }
