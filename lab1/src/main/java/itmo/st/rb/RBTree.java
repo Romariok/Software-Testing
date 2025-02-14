@@ -5,7 +5,7 @@ private static final boolean RED = true;
 private static final boolean BLACK = false;
 
 public class Node {
-    int key;
+    public int key;
     public Node left, right;
     public boolean color;
 
