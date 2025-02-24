@@ -1,5 +1,8 @@
 package itmo.st.galaxy;
 
+import lombok.Getter;
+
+@Getter
 public class Book {
     private String title;
     private String author;
@@ -18,17 +21,5 @@ public class Book {
         if (year <= 0) {
             throw new IllegalArgumentException("Год издания книги не может быть меньше или равен 0");
         }
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public int getYear() {
-        return year;
     }
 }

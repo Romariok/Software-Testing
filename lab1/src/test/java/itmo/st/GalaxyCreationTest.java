@@ -2,108 +2,102 @@ package itmo.st;
 
 import itmo.st.galaxy.Book;
 import itmo.st.galaxy.Editor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Date;
+import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GalaxyCreationTest {
+    private static final String VALID_BOOK_TITLE = "Война и мир";
+    private static final String VALID_AUTHOR = "Лев Толстой";
+    private static final int VALID_YEAR = 1869;
+    private static final String VALID_EDITOR_NAME = "Александр Пушкин";
+
+    private Date validDate;
+    private Date futureDate;
+    private Date pastDate;
+
+    @BeforeEach
+    void setUp() {
+        validDate = new Date();
+        futureDate = new Date(System.currentTimeMillis() + 1000000);
+        pastDate = new Date(-1);
+    }
 
     @Test
     void testBookCreationWithValidData() {
-        Book book = new Book("Война и мир", "Лев Толстой", 1869);
+        Book book = new Book(VALID_BOOK_TITLE, VALID_AUTHOR, VALID_YEAR);
         assertNotNull(book);
-        assertEquals("Война и мир", book.getTitle());
-        assertEquals("Лев Толстой", book.getAuthor());
-        assertEquals(1869, book.getYear());
+        assertEquals(VALID_BOOK_TITLE, book.getTitle());
+        assertEquals(VALID_AUTHOR, book.getAuthor());
+        assertEquals(VALID_YEAR, book.getYear());
     }
 
-    @Test
-    void testBookCreationWithEmptyTitle() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Book("", "Аноним", 2000);
-        });
-        assertEquals("Название книги не может быть пустым", exception.getMessage());
+    private static Stream<Arguments> invalidBookDataProvider() {
+        return Stream.of(
+                Arguments.of("", "Аноним", 2000, "Название книги не может быть пустым"),
+                Arguments.of("Книга", null, 2020, "Автор книги не может быть пустым"),
+                Arguments.of(null, "Аноним", 2000, "Название книги не может быть пустым"),
+                Arguments.of("Книга", "", 2020, "Автор книги не может быть пустым"),
+                Arguments.of("Книга", "Автор", -1, "Год издания книги не может быть меньше или равен 0"));
     }
 
-    @Test
-    void testBookCreationWithNullAuthor() {
+    @ParameterizedTest
+    @MethodSource("invalidBookDataProvider")
+    void testBookCreationWithInvalidData(String title, String author, int year, String expectedMessage) {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Book("Книга", null, 2020);
+            new Book(title, author, year);
         });
-        assertEquals("Автор книги не может быть пустым", exception.getMessage());
-    }
-
-    @Test
-    void testBookCreationWithNullTitle() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Book(null, "Аноним", 2000);
-        });
-        assertEquals("Название книги не может быть пустым", exception.getMessage());
-    }
-
-    @Test
-    void testBookCreationWithEmptyAuthor() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Book("Книга", "", 2020);
-        });
-        assertEquals("Автор книги не может быть пустым", exception.getMessage());
-    }
-
-    @Test
-    void testBookCreationWithNegativeYear() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Book("Книга", "Автор", -1);
-        });
-        assertEquals("Год издания книги не может быть меньше или равен 0", exception.getMessage());
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
     void testEditorCreationWithValidData() {
-        Date date = new Date();
-        Editor editor = new Editor("Александр Пушкин", date);
+        Editor editor = new Editor(VALID_EDITOR_NAME, validDate);
         assertNotNull(editor);
-        assertEquals("Александр Пушкин", editor.getName());
-        assertEquals(date, editor.getBirthDate());
+        assertEquals(VALID_EDITOR_NAME, editor.getName());
+        assertEquals(validDate, editor.getBirthDate());
     }
 
-    @Test
-    void testEditorCreationWithEmptyName() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Editor("", new Date());
-        });
-        assertEquals("Имя редактора не может быть пустым", exception.getMessage());
+    private static Stream<Arguments> invalidEditorDataProvider() {
+        return Stream.of(
+                Arguments.of("", "Имя редактора не может быть пустым"),
+                Arguments.of(null, "Имя редактора не может быть пустым"));
     }
 
-    @Test
-    void testEditorCreationWithNullName() {
+    @ParameterizedTest
+    @MethodSource("invalidEditorDataProvider")
+    void testEditorCreationWithInvalidName(String name, String expectedMessage) {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Editor(null, new Date());
+            new Editor(name, validDate);
         });
-        assertEquals("Имя редактора не может быть пустым", exception.getMessage());
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
     void testEditorCreationWithNullDate() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Editor("Иван Иванов", null);
+            new Editor(VALID_EDITOR_NAME, null);
         });
         assertEquals("Дата рождения не может быть пустой", exception.getMessage());
     }
 
     @Test
     void testEditorCreationWithFutureDate() {
-        Date futureDate = new Date(System.currentTimeMillis() + 1000000);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Editor("Федор Достоевский", futureDate);
+            new Editor(VALID_EDITOR_NAME, futureDate);
         });
         assertEquals("Дата рождения не может быть в будущем", exception.getMessage());
     }
 
     @Test
     void testEditorCreationWithPastDate() {
-        Date pastDate = new Date(-1);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Editor("Федор Достоевский", pastDate);
+            new Editor(VALID_EDITOR_NAME, pastDate);
         });
         assertEquals("Дата рождения не может быть меньше 0", exception.getMessage());
     }

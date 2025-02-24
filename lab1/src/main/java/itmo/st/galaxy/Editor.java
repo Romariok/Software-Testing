@@ -2,6 +2,10 @@ package itmo.st.galaxy;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
+import lombok.Getter;
+import lombok.ToString;
+@ToString
+@Getter
 
 public class Editor {
    private String name;
@@ -37,28 +41,4 @@ public class Editor {
       this.books.put(book, state);
    }
 
-   public LinkedHashMap<Book, BookState> getBooks() {
-      return this.books;
-   }
-
-   public String getName() {
-      return this.name;
-   }
-
-   public Date getBirthDate() {
-      return this.birthDate;
-   }
-
-   public String toString() {
-      StringBuilder sb = new StringBuilder();
-      sb.append(this.name).append(" ").append(this.birthDate).append("\n");
-      sb.append("Books: \n");
-      for (var entry : books.entrySet()) {
-          sb.append(entry.getKey().getTitle())
-            .append(" - ")
-            .append(entry.getValue().getString())
-            .append("\n");
-      }
-      return sb.toString();
-   }
 }

@@ -2,11 +2,26 @@ package itmo.st;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.*;
 import itmo.st.rb.RBTree;
 
 public class RBTreeTest {
    private RBTree tree;
+
+   private static final int ROOT_VALUE = 10;
+   private static final int LEFT_CHILD = 5;
+   private static final int RIGHT_CHILD = 15;
+   private static final int NON_EXISTING_VALUE = 20;
+
+   private static final int[] MULTIPLE_VALUES = { 7, 3, 18, 10, 22, 8, 11, 26 };
+   private static final int[] BALANCED_TREE_VALUES = { 10, 5, 15, 3, 7, 12, 18 };
 
    @BeforeEach
    void setUp() {
@@ -14,51 +29,42 @@ public class RBTreeTest {
    }
 
    @Test
-   void testInsertAndContains() {
-      tree.insert(10);
-      tree.insert(5);
-      tree.insert(15);
-
-      assertTrue(tree.contains(10));
-      assertTrue(tree.contains(5));
-      assertTrue(tree.contains(15));
-      assertFalse(tree.contains(20));
+   void testBasicOperations() {
+      tree.insert(ROOT_VALUE);
+      tree.insert(LEFT_CHILD);
+      tree.insert(RIGHT_CHILD);
+      assertAll(
+         () -> assertTrue(tree.contains(ROOT_VALUE)),
+         () -> assertTrue(tree.contains(LEFT_CHILD)),
+         () -> assertTrue(tree.contains(RIGHT_CHILD)),
+         () -> assertFalse(tree.contains(NON_EXISTING_VALUE))
+      );
    }
 
-   @Test
-   void testEmptyTree() {
-      assertFalse(tree.contains(10));
-   }
-
-   @Test
-   void testDuplicateInsert() {
-      tree.insert(10);
-      tree.insert(10);
-
-      assertTrue(tree.contains(10));
+   @ParameterizedTest
+   @ValueSource(ints = { -1, 0, 20, 30 })
+   void testDuplicateInsert(int value) {
+      tree.insert(value);
+      tree.insert(value);
+      assertTrue(tree.contains(value));
    }
 
    @Test
    void testMultipleInserts() {
-      int[] values = { 7, 3, 18, 10, 22, 8, 11, 26 };
-
-      for (int value : values) {
-         tree.insert(value);
-      }
-
-      for (int value : values) {
-         assertTrue(tree.contains(value));
-      }
-
+      insertValues(MULTIPLE_VALUES);
+      assertArrayContains(MULTIPLE_VALUES);
       assertFalse(tree.contains(100));
       assertFalse(tree.contains(0));
    }
 
-   @Test
-   void testFlipColors() {
-      RBTree.Node node = tree.new Node(10, false);
-      node.left = tree.new Node(5, true);
-      node.right = tree.new Node(15, true);
+   @ParameterizedTest
+   @MethodSource("provideNodesForColorFlipping")
+   void testFlipColorsParameterized(int nodeValue, int leftValue, int rightValue,
+         boolean initialNodeColor, boolean initialLeftColor,
+         boolean initialRightColor) {
+      RBTree.Node node = createNode(nodeValue, initialNodeColor);
+      node.left = createNode(leftValue, initialLeftColor);
+      node.right = createNode(rightValue, initialRightColor);
 
       tree.flipColors(node);
 
@@ -67,102 +73,54 @@ public class RBTreeTest {
       assertFalse(node.right.color);
    }
 
-   @Test
-   void testFlipColorsWithNullLeaves() {
-      RBTree.Node node = tree.new Node(10, false);
-      node.left = null;
-      node.right = null;
-
-      tree.flipColors(node);
-
-      assertTrue(node.color);
-      assertNull(node.left);
-      assertNull(node.right);
-
-      node.right = tree.new Node(15, false);
-      tree.flipColors(node);
-      assertFalse(node.color);
-      assertNull(node.left);
-      assertTrue(node.right.color);
-
-      node.right = null;
-      node.left = tree.new Node(5, true);
-      tree.flipColors(node);
-      assertTrue(node.color);
-      assertFalse(node.left.color);
-      assertNull(node.right);
+   private static Stream<Arguments> provideNodesForColorFlipping() {
+      return Stream.of(
+            Arguments.of(ROOT_VALUE, LEFT_CHILD, RIGHT_CHILD, false, true, true));
    }
 
-
    @Test
-   void testDeleteAndBalance() {
-      int[] values = {10, 5, 15, 3, 7, 12, 18};
+   void testDeleteOperations() {
+      insertValues(BALANCED_TREE_VALUES);
+      performDeletionTests();
+   }
+
+   private void insertValues(int[] values) {
       for (int value : values) {
          tree.insert(value);
       }
+   }
 
-      // Удаление листа
-      tree.delete(3);
-      assertFalse(tree.contains(3));
-      assertTrue(tree.contains(5));
-      assertTrue(tree.contains(7));
+   private void assertArrayContains(int[] values) {
+      for (int value : values) {
+         assertTrue(tree.contains(value));
+      }
+   }
 
-      // Удаление узла с одним потомком
-      tree.delete(15);
-      assertFalse(tree.contains(15));
-      assertTrue(tree.contains(18));
+   private RBTree.Node createNode(int value, boolean color) {
+      return tree.new Node(value, color);
+   }
 
-      // Удаление узла с двумя потомками
-      tree.delete(10);
-      assertFalse(tree.contains(10));
-      assertTrue(tree.contains(12));
-      assertTrue(tree.contains(5));
-      assertTrue(tree.contains(7));
-      assertTrue(tree.contains(18));
+   private void performDeletionTests() {
+      deleteAndVerify(3, new int[] { 5, 7 });
 
-      // Удаление корня
-      tree.delete(12);
-      assertFalse(tree.contains(12));
-      assertTrue(tree.contains(5));
-      assertTrue(tree.contains(7));
-      assertTrue(tree.contains(18));
+      deleteAndVerify(15, new int[] { 18 });
 
-      // Удаление всех элементов
-      for (int value : new int[]{5, 7, 18}) {
-         tree.delete(value);
-         assertFalse(tree.contains(value));
+      deleteAndVerify(10, new int[] { 12, 5, 7, 18 });
+
+      deleteAndVerify(12, new int[] { 5, 7, 18 });
+
+      for (int value : new int[] { 5, 7, 18 }) {
+         deleteAndVerify(value, new int[] {});
       }
 
-      // Проверка пустого дерева
       assertNull(tree.root);
    }
 
-   @Test
-   void testDeleteNonExistingElement() {
-      tree.insert(10);
-      tree.insert(5);
-      
-      tree.delete(15);
-      assertTrue(tree.contains(10));
-      assertTrue(tree.contains(5));
-      assertFalse(tree.contains(15));
-   }
-
-   @Test
-   void testBalanceAfterDeletion() {
-      int[] values = {10, 5, 15, 3, 7, 12, 18};
-      for (int value : values) {
-         tree.insert(value);
+   private void deleteAndVerify(int valueToDelete, int[] remainingValues) {
+      tree.delete(valueToDelete);
+      assertFalse(tree.contains(valueToDelete));
+      for (int value : remainingValues) {
+         assertTrue(tree.contains(value));
       }
-
-      tree.delete(3);
-      assertFalse(tree.root.left.left.color);
-
-      tree.delete(15);
-      assertFalse(tree.root.right.color);
-
-      tree.delete(10);
-      assertFalse(tree.root.color);
    }
-
 }

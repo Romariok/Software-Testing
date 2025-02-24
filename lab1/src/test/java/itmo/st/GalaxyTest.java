@@ -12,15 +12,28 @@ import itmo.st.galaxy.BookState;
 import itmo.st.galaxy.Editor;
 
 public class GalaxyTest {
+    private static final String EDITOR_NAME = "Иван Петров";
+    private static final String HITCHHIKERS_TITLE = "Путеводитель по Галактике для автостопщиков";
+    private static final String HITCHHIKERS_AUTHOR = "Дуглас Адамс";
+    private static final int HITCHHIKERS_YEAR = 1979;
+    private static final String REGULAR_TITLE = "Обычная книга";
+    private static final String REGULAR_AUTHOR = "Обычный автор";
+    private static final int REGULAR_YEAR = 2000;
+
     private Editor editor;
     private Book hitchhikersGuide;
     private Book regularBook;
 
     @BeforeEach
     void setUp() {
-        editor = new Editor("Иван Петров", new Date());
-        hitchhikersGuide = new Book("Путеводитель по Галактике для автостопщиков", "Дуглас Адамс", 1979);
-        regularBook = new Book("Обычная книга", "Обычный автор", 2000);
+        editor = new Editor(EDITOR_NAME, new Date());
+        hitchhikersGuide = new Book(HITCHHIKERS_TITLE, HITCHHIKERS_AUTHOR, HITCHHIKERS_YEAR);
+        regularBook = new Book(REGULAR_TITLE, REGULAR_AUTHOR, REGULAR_YEAR);
+    }
+
+    private void addBothBooks() {
+        editor.addBook(hitchhikersGuide);
+        editor.addBook(regularBook);
     }
 
     @Test
@@ -37,29 +50,28 @@ public class GalaxyTest {
 
     @Test
     void testMultipleBooks() {
-        editor.addBook(hitchhikersGuide);
-        editor.addBook(regularBook);
-        
+        addBothBooks();
+
         assertEquals(2, editor.getBooks().size());
         assertEquals(BookState.EXTRORDINARY, editor.getBooks().get(hitchhikersGuide));
     }
 
     @Test
     void testBookGetters() {
-        assertEquals("Путеводитель по Галактике для автостопщиков", hitchhikersGuide.getTitle());
-        assertEquals("Дуглас Адамс", hitchhikersGuide.getAuthor());
-        assertEquals(1979, hitchhikersGuide.getYear());
+        assertAll(
+                () -> assertEquals(HITCHHIKERS_TITLE, hitchhikersGuide.getTitle()),
+                () -> assertEquals(HITCHHIKERS_AUTHOR, hitchhikersGuide.getAuthor()),
+                () -> assertEquals(HITCHHIKERS_YEAR, hitchhikersGuide.getYear()));
     }
-
 
     @Test
     void testEditorToString() {
         editor.addBook(hitchhikersGuide);
         String result = editor.toString();
-        
-        assertTrue(result.contains(editor.getName()));
-        assertTrue(result.contains(hitchhikersGuide.getTitle()));
-        assertTrue(result.contains(BookState.EXTRORDINARY.getString()));
+
+        assertAll(
+                () -> assertTrue(result.contains(EDITOR_NAME)),
+                () -> assertTrue(result.contains(HITCHHIKERS_TITLE)),
+                () -> assertTrue(result.contains(BookState.EXTRORDINARY.getString())));
     }
 }
-
