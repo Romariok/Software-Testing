@@ -4,9 +4,9 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import lombok.Getter;
 import lombok.ToString;
+
 @ToString
 @Getter
-
 public class Editor {
    private String name;
    private Date birthDate;

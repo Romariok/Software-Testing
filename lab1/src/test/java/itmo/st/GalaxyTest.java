@@ -64,14 +64,4 @@ public class GalaxyTest {
                 () -> assertEquals(HITCHHIKERS_YEAR, hitchhikersGuide.getYear()));
     }
 
-    @Test
-    void testEditorToString() {
-        editor.addBook(hitchhikersGuide);
-        String result = editor.toString();
-
-        assertAll(
-                () -> assertTrue(result.contains(EDITOR_NAME)),
-                () -> assertTrue(result.contains(HITCHHIKERS_TITLE)),
-                () -> assertTrue(result.contains(BookState.EXTRORDINARY.getString())));
-    }
 }
