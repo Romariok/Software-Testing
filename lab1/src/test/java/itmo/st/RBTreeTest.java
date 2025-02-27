@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.Stream;
 
@@ -33,19 +32,12 @@ public class RBTreeTest {
       tree.insert(ROOT_VALUE);
       tree.insert(LEFT_CHILD);
       tree.insert(RIGHT_CHILD);
+      tree.insert(RIGHT_CHILD);
       assertAll(
             () -> assertTrue(tree.contains(ROOT_VALUE)),
             () -> assertTrue(tree.contains(LEFT_CHILD)),
             () -> assertTrue(tree.contains(RIGHT_CHILD)),
             () -> assertFalse(tree.contains(NON_EXISTING_VALUE)));
-   }
-
-   @ParameterizedTest
-   @ValueSource(ints = { -1, 0, 20, 30 })
-   void testDuplicateInsert(int value) {
-      tree.insert(value);
-      tree.insert(value);
-      assertTrue(tree.contains(value));
    }
 
    @Test
@@ -55,6 +47,7 @@ public class RBTreeTest {
       assertFalse(tree.contains(100));
       assertFalse(tree.contains(0));
    }
+
 
    @ParameterizedTest
    @MethodSource("provideNodesForColorFlipping")
@@ -82,6 +75,58 @@ public class RBTreeTest {
       insertValues(BALANCED_TREE_VALUES);
       performDeletionTests();
    }
+
+   @Test
+   void testDeleteNonExistingValue() {
+      insertValues(BALANCED_TREE_VALUES);
+      assertDoesNotThrow(() -> tree.delete(NON_EXISTING_VALUE));
+      assertArrayContains(BALANCED_TREE_VALUES);
+   }
+
+   @Test
+   void testFlipColorsWithNullChildren() {
+      RBTree.Node node = createNode(ROOT_VALUE, false);
+      assertDoesNotThrow(() -> tree.flipColors(node));
+      assertTrue(node.color);
+   }
+
+   @Test
+   void testFlipColorsWithOneNullChild() {
+      RBTree.Node node = createNode(ROOT_VALUE, false);
+      node.left = createNode(LEFT_CHILD, true);
+      assertDoesNotThrow(() -> tree.flipColors(node));
+      assertTrue(node.color);
+      assertFalse(node.left.color);
+   }
+
+
+   @Test
+   void testExtremeBoundaryValues() {
+      tree.insert(Integer.MAX_VALUE);
+      tree.insert(Integer.MIN_VALUE);
+
+      assertTrue(tree.contains(Integer.MAX_VALUE));
+      assertTrue(tree.contains(Integer.MIN_VALUE));
+
+      tree.delete(Integer.MAX_VALUE);
+      tree.delete(Integer.MIN_VALUE);
+
+      assertFalse(tree.contains(Integer.MAX_VALUE));
+      assertFalse(tree.contains(Integer.MIN_VALUE));
+   }
+
+   @Test
+   void testBoundaryValues() {
+      int[] extremeValues = {Integer.MAX_VALUE + 1, Integer.MIN_VALUE - 1};
+      
+      for (int value : extremeValues) {
+         assertDoesNotThrow(() -> tree.insert(value));
+         assertDoesNotThrow(() -> tree.contains(value));
+         assertDoesNotThrow(() -> tree.delete(value));
+      }
+
+   }
+
 
    private void insertValues(int[] values) {
       for (int value : values) {
