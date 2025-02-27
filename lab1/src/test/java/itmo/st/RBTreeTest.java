@@ -34,11 +34,10 @@ public class RBTreeTest {
       tree.insert(LEFT_CHILD);
       tree.insert(RIGHT_CHILD);
       assertAll(
-         () -> assertTrue(tree.contains(ROOT_VALUE)),
-         () -> assertTrue(tree.contains(LEFT_CHILD)),
-         () -> assertTrue(tree.contains(RIGHT_CHILD)),
-         () -> assertFalse(tree.contains(NON_EXISTING_VALUE))
-      );
+            () -> assertTrue(tree.contains(ROOT_VALUE)),
+            () -> assertTrue(tree.contains(LEFT_CHILD)),
+            () -> assertTrue(tree.contains(RIGHT_CHILD)),
+            () -> assertFalse(tree.contains(NON_EXISTING_VALUE)));
    }
 
    @ParameterizedTest
