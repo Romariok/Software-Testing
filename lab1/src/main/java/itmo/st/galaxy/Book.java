@@ -1,8 +1,10 @@
 package itmo.st.galaxy;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class Book {
     private String title;
     private String author;
