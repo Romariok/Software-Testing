@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
-class MathUtilsTest {
+public class MathUtilsTest {
     private record TestParams(double value, int terms, double delta) {
     }
 
