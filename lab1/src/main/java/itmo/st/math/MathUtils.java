@@ -4,6 +4,8 @@ public class MathUtils {
     public static double arccosSeries(double x, int terms) {
         if (!(x > -1 && x < 1))
             throw new IllegalArgumentException("x must be in (-1,1)");
+        if (terms<0)
+            throw new IllegalArgumentException("terms must be >= 0");
 
         double result = Math.PI / 2; // First term π/2
 

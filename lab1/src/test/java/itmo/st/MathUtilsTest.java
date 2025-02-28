@@ -1,5 +1,6 @@
 package itmo.st;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import itmo.st.math.MathUtils;
@@ -25,6 +26,16 @@ public class MathUtilsTest {
                                 .map(delta -> new TestParams(value, term, delta))));
     }
 
+    static Stream<Integer> IllegalTermsProvider() {
+        return Stream.of(-10, -1);
+    }
+
+    @ParameterizedTest
+    @MethodSource("IllegalTermsProvider")
+    void testArccosSeriesIllegalTerms(Integer terms) {
+        assertThrows(IllegalArgumentException.class, () -> MathUtils.arccosSeries(0, terms));
+    }
+
     @ParameterizedTest
     @MethodSource("arccosTestParameters")
     void testArccosSeries(TestParams params) {
@@ -34,7 +45,7 @@ public class MathUtilsTest {
     }
 
     static Stream<Double> IllegalValuesProvider() {
-        return Stream.of(1d,-1d,1.1d,-1.1d);
+        return Stream.of(1d, -1d, 1.1d, -1.1d);
     }
 
     @ParameterizedTest
