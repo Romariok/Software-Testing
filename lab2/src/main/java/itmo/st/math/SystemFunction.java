@@ -1,6 +1,8 @@
 package itmo.st.math;
 
 public class SystemFunction {
+    TrigonometricFunctions trigonometricFunctions = new TrigonometricFunctions();
+    LogarithmicFunctions logarithmicFunctions = new LogarithmicFunctions();
     /**
      * Вычисляет значение системы функций:
      * x <= 0: (((((cos(x) + sin(x)) * cot(x)) / tan(x)) ^ 2) + ((tan(x) * (cos(x) -
@@ -8,7 +10,7 @@ public class SystemFunction {
      * x > 0: (((((log_10(x) / log_3(x)) - log_5(x)) ^ 3) * (log_2(x) - log_2(x))) *
      * ln(x))
      */
-    public static double calculate(double x) {
+    public double calculate(double x) {
         if (x <= 0) {
             return calculateTrigonometric(x);
         } else {
@@ -19,7 +21,7 @@ public class SystemFunction {
     /**
      * Вычисляет тригонометрическую часть системы функций
      */
-    public static double calculateTrigonometric(double x) {
+    public double calculateTrigonometric(double x) {
         try {
             double part1 = calculateTrigPart1(x);
             double part2 = calculateTrigPart2(x);
@@ -33,11 +35,11 @@ public class SystemFunction {
      * Вычисляет первую часть тригонометрической функции: (((cos(x) + sin(x)) *
      * cot(x)) / tan(x)) ^ 2
      */
-    public static double calculateTrigPart1(double x) {
-        double cosX = TrigonometricFunctions.cos(x);
-        double sinX = TrigonometricFunctions.sin(x);
-        double cotX = TrigonometricFunctions.cot(x);
-        double tanX = TrigonometricFunctions.tan(x);
+    public double calculateTrigPart1(double x) {
+        double cosX = trigonometricFunctions.cos(x);
+        double sinX = trigonometricFunctions.sin(x);
+        double cotX = trigonometricFunctions.cot(x);
+        double tanX = trigonometricFunctions.tan(x);
 
         double sum = cosX + sinX;
         double product = sum * cotX;
@@ -50,10 +52,10 @@ public class SystemFunction {
      * (tan(x) * (cos(x) - csc(x))) - (((cot(x) + csc(x)) / csc(x)) + ((cos(x) /
      * cot(x)) / sec(x)))
      */
-    public static double calculateTrigPart2(double x) {
-        double tanX = TrigonometricFunctions.tan(x);
-        double cosX = TrigonometricFunctions.cos(x);
-        double cscX = TrigonometricFunctions.csc(x);
+    public double calculateTrigPart2(double x) {
+        double tanX = trigonometricFunctions.tan(x);
+        double cosX = trigonometricFunctions.cos(x);
+        double cscX = trigonometricFunctions.csc(x);
 
         double subPart1 = tanX * (cosX - cscX);
         double subPart2 = calculateTrigPart2SubPart2(x);
@@ -65,11 +67,11 @@ public class SystemFunction {
      * Вычисляет подчасть второй части тригонометрической функции:
      * ((cot(x) + csc(x)) / csc(x)) + ((cos(x) / cot(x)) / sec(x))
      */
-    public static double calculateTrigPart2SubPart2(double x) {
-        double cotX = TrigonometricFunctions.cot(x);
-        double cscX = TrigonometricFunctions.csc(x);
-        double cosX = TrigonometricFunctions.cos(x);
-        double secX = TrigonometricFunctions.sec(x);
+    public double calculateTrigPart2SubPart2(double x) {
+        double cotX = trigonometricFunctions.cot(x);
+        double cscX = trigonometricFunctions.csc(x);
+        double cosX = trigonometricFunctions.cos(x);
+        double secX = trigonometricFunctions.sec(x);
 
         double fraction1 = (cotX + cscX) / cscX;
         double fraction2 = (cosX / cotX) / secX;
@@ -80,11 +82,11 @@ public class SystemFunction {
     /**
      * Вычисляет логарифмическую часть системы функций
      */
-    public static double calculateLogarithmic(double x) {
+    public double calculateLogarithmic(double x) {
         try {
             double part1 = calculateLogPart1(x);
             double part2 = calculateLogPart2(x);
-            double lnX = LogarithmicFunctions.ln(x);
+            double lnX = logarithmicFunctions.ln(x);
 
             return part1 * part2 * lnX;
         } catch (IllegalArgumentException e) {
@@ -96,10 +98,10 @@ public class SystemFunction {
      * Вычисляет первую часть логарифмической функции: ((log_10(x) / log_3(x)) -
      * log_5(x)) ^ 3
      */
-    public static double calculateLogPart1(double x) {
-        double log10X = LogarithmicFunctions.log10(x);
-        double log3X = LogarithmicFunctions.log3(x);
-        double log5X = LogarithmicFunctions.log5(x);
+    public double calculateLogPart1(double x) {
+        double log10X = logarithmicFunctions.log10(x);
+        double log3X = logarithmicFunctions.log3(x);
+        double log5X = logarithmicFunctions.log5(x);
 
         double division = log10X / log3X;
         double difference = division - log5X;
@@ -111,8 +113,8 @@ public class SystemFunction {
      * Вычисляет вторую часть логарифмической функции: (log_2(x) - log_2(x))
      * Примечание: эта часть всегда равна 0
      */
-    public static double calculateLogPart2(double x) {
-        double log2X = LogarithmicFunctions.log2(x);
+    public double calculateLogPart2(double x) {
+        double log2X = logarithmicFunctions.log2(x);
         return log2X - log2X; // Всегда 0
     }
 }

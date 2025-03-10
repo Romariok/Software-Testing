@@ -1,18 +1,27 @@
 package itmo.st.math;
 
 public class TrigonometricFunctions {
+    private final BaseFunctions baseFunctions;
+
+    public TrigonometricFunctions(BaseFunctions baseFunctions) {
+        this.baseFunctions = baseFunctions;
+    }
+
+    public TrigonometricFunctions() {
+        this.baseFunctions = new BaseFunctions();
+    }
     /**
      * Вычисляет синус через косинус: sin(x) = cos(x - π/2)
      */
-    public static double sin(double x) {
-        return BaseFunctions.cos(x - Math.PI / 2);
+    public double sin(double x) {
+        return baseFunctions.cos(x - Math.PI / 2);
     }
 
     /**
      * Вычисляет тангенс: tan(x) = sin(x) / cos(x)
      */
-    public static double tan(double x) {
-        double cosValue = cos(x);
+    public double tan(double x) {
+        double cosValue = baseFunctions.cos(x);
         checkDivisionByZero(cosValue, "Tangent is undefined at x = " + x);
         return sin(x) / cosValue;
     }
@@ -20,16 +29,16 @@ public class TrigonometricFunctions {
     /**
      * Вычисляет котангенс: cot(x) = cos(x) / sin(x)
      */
-    public static double cot(double x) {
+    public double cot(double x) {
         double sinValue = sin(x);
         checkDivisionByZero(sinValue, "Cotangent is undefined at x = " + x);
-        return cos(x) / sinValue;
+        return baseFunctions.cos(x) / sinValue;
     }
 
     /**
      * Вычисляет косеканс: csc(x) = 1 / sin(x)
      */
-    public static double csc(double x) {
+    public double csc(double x) {
         double sinValue = sin(x);
         checkDivisionByZero(sinValue, "Cosecant is undefined at x = " + x);
         return 1 / sinValue;
@@ -38,8 +47,8 @@ public class TrigonometricFunctions {
     /**
      * Вычисляет секанс: sec(x) = 1 / cos(x)
      */
-    public static double sec(double x) {
-        double cosValue = cos(x);
+    public double sec(double x) {
+        double cosValue = baseFunctions.cos(x);
         checkDivisionByZero(cosValue, "Secant is undefined at x = " + x);
         return 1 / cosValue;
     }
@@ -47,7 +56,7 @@ public class TrigonometricFunctions {
     /**
      * Вспомогательный метод для проверки деления на ноль
      */
-    private static void checkDivisionByZero(double value, String message) {
+    private void checkDivisionByZero(double value, String message) {
         if (Math.abs(value) < BaseFunctions.EPSILON) {
             throw new ArithmeticException(message);
         }
@@ -56,7 +65,7 @@ public class TrigonometricFunctions {
     /**
      * Вычисляет косинус (прокси-метод для удобства)
      */
-    public static double cos(double x) {
-        return BaseFunctions.cos(x);
+    public double cos(double x) {
+        return baseFunctions.cos(x);
     }
 }

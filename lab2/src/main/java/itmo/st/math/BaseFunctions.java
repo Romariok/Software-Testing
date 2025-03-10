@@ -8,7 +8,7 @@ public class BaseFunctions {
      * Вычисляет косинус через разложение в ряд Тейлора
      * cos(x) = 1 - x^2/2! + x^4/4! - x^6/6! + ...
      */
-    public static double cos(double x) {
+    public double cos(double x) {
         // Приведение x к диапазону [0, 2π)
         x = normalizeAngle(x);
 
@@ -33,7 +33,7 @@ public class BaseFunctions {
     /**
      * Нормализует угол в диапазон [0, 2π)
      */
-    public static double normalizeAngle(double x) {
+    public double normalizeAngle(double x) {
         x = x % (2 * Math.PI);
         if (x < 0) {
             x += 2 * Math.PI;
@@ -46,7 +46,7 @@ public class BaseFunctions {
      * ln(1+x) = x - x^2/2 + x^3/3 - x^4/4 + ...
      * Для x > 0, используем ln(x) = ln((1+(x-1)) = ln(1+(x-1))
      */
-    public static double ln(double x) {
+    public double ln(double x) {
         if (x <= 0) {
             throw new IllegalArgumentException("Logarithm is defined only for positive numbers");
         }
@@ -68,7 +68,7 @@ public class BaseFunctions {
     /**
      * Вычисляет ln(1+z) для z близких к 0 через ряд Тейлора
      */
-    public static double lnNearOne(double z) {
+    public double lnNearOne(double z) {
         double result = 0;
         double term = z;
         double z_power = z;
@@ -89,7 +89,7 @@ public class BaseFunctions {
     /**
      * Вычисляет ln(x) для больших значений x через свойство ln(a*b) = ln(a) + ln(b)
      */
-    public static double lnLargeValue(double x) {
+    public double lnLargeValue(double x) {
         // Находим k такое, что x/2^k будет близко к 1
         int k = 0;
         double reduced_x = x;
