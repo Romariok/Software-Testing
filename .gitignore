@@ -1,3 +1,5 @@
-
+*/.mvn
+*/.vscode
+*/target
 *.class
 software-testing-1/software-testing-1.iml
