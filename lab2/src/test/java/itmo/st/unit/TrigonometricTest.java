@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import itmo.st.math.TrigonometricFunctions;
 
-public class TrigonometricalTest {
+public class TrigonometricTest {
    private static final double DELTA = 0.0001;
 
    private TrigonometricFunctions trigonometricFunctions;
