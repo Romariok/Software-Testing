@@ -1,8 +1,9 @@
 package itmo.st.math;
 
 public class BaseFunctions {
-    protected static final double EPSILON = 1e-10;
-    private static final int MAX_TERMS = 100; // Максимальное количество членов ряда.
+    protected static final double EPSILON = 1e-7;
+    private static final int MAX_TERMS = 50; // Максимальное количество членов ряда.
+    private static final double LN_2 = 0.69314718d;
 
     /**
      * Вычисляет косинус через разложение в ряд Тейлора
@@ -94,12 +95,12 @@ public class BaseFunctions {
         int k = 0;
         double reduced_x = x;
 
-        while (reduced_x > 1.5) {
+        while (reduced_x >= 1.5) {
             reduced_x /= 2;
             k++;
         }
 
         // ln(x) = ln(x/2^k * 2^k) = ln(x/2^k) + ln(2^k) = ln(x/2^k) + k*ln(2)
-        return ln(reduced_x) + k * ln(2);
+        return ln(reduced_x) + k * LN_2;
     }
 }
