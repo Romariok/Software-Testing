@@ -28,16 +28,16 @@ public class LogarithmicTest {
    @DisplayName("Test log integration with ln")
    @Test
    void testLogIntegrationWithLn() {
-      when(baseFunctions.ln(anyDouble())).thenReturn(Math.log(anyDouble()));
-
+      double x = 4.5232;
       double base = 2.0;
-      double x = 8.0;
+      when(baseFunctions.ln(x)).thenReturn(Math.log(x));
+      when(baseFunctions.ln(base)).thenReturn(Math.log(base));
+
       double expected = Math.log(x) / Math.log(base);
       assertEquals(expected, logarithmicFunctions.log(base, x), DELTA);
-
       verify(baseFunctions, times(1)).ln(x);
+      verify(baseFunctions, times(1)).ln(base);
    }
 
-   // @DisplayName("Test log2 integration with ln")
    
 }

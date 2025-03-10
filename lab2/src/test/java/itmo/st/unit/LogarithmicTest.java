@@ -23,5 +23,10 @@ public class LogarithmicTest {
    void testLn(double input, double expected) {
       assertEquals(expected, logarithmicFunctions.ln(input), DELTA);
    }
-   
+
+   @CsvFileSource(resources = "/dataset/logTestDataset.csv", delimiter = ';')
+   @ParameterizedTest(name = "{index} - Test log {0} with base {1} = {2}")
+   void testLog(double input, double base, double expected) {
+      assertEquals(expected, logarithmicFunctions.log(base, input), DELTA);
+   }
 }
