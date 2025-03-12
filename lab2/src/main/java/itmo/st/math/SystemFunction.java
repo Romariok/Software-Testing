@@ -1,8 +1,19 @@
 package itmo.st.math;
 
 public class SystemFunction {
-    TrigonometricFunctions trigonometricFunctions = new TrigonometricFunctions();
-    LogarithmicFunctions logarithmicFunctions = new LogarithmicFunctions();
+    private TrigonometricFunctions trigonometricFunctions;
+    private LogarithmicFunctions logarithmicFunctions;
+
+    public SystemFunction(TrigonometricFunctions trigonometricFunctions, LogarithmicFunctions logarithmicFunctions) {
+        this.trigonometricFunctions = trigonometricFunctions;
+        this.logarithmicFunctions = logarithmicFunctions;
+    }
+
+    public SystemFunction() {
+        this.trigonometricFunctions = new TrigonometricFunctions();
+        this.logarithmicFunctions = new LogarithmicFunctions();
+    }
+
     /**
      * Вычисляет значение системы функций:
      * x <= 0: (((((cos(x) + sin(x)) * cot(x)) / tan(x)) ^ 2) + ((tan(x) * (cos(x) -
@@ -44,7 +55,7 @@ public class SystemFunction {
         double sum = cosX + sinX;
         double product = sum * cotX;
         double division = product / tanX;
-        return Math.pow(division, 2);
+        return division * division;
     }
 
     /**

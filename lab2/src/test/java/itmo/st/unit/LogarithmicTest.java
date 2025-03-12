@@ -29,4 +29,16 @@ public class LogarithmicTest {
    void testLog(double input, double base, double expected) {
       assertEquals(expected, logarithmicFunctions.log(base, input), DELTA);
    }
+
+   @CsvFileSource(resources = "/dataset/invalidLnTestDataset.csv", delimiter = ';')
+   @ParameterizedTest(name = "{index} - Test ln with invalid input {0}")
+   void testLnWithInvalidInput(double input) {
+      assertThrows(IllegalArgumentException.class, () -> logarithmicFunctions.ln(input));
+   }
+
+   @CsvFileSource(resources = "/dataset/invalidLogTestDataset.csv", delimiter = ';')
+   @ParameterizedTest(name = "{index} - Test log with invalid input {0} and base {1}")
+   void testLogWithInvalidInput(double input, double base) {
+      assertThrows(IllegalArgumentException.class, () -> logarithmicFunctions.log(base, input));
+   }
 }
