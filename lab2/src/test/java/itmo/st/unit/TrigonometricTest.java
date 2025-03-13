@@ -17,37 +17,37 @@ public class TrigonometricTest {
       trigonometricFunctions = new TrigonometricFunctions();
    }
 
-   @CsvFileSource(resources = "/dataset/cosTestDataset.csv", delimiter = ';')
+   @CsvFileSource(resources = "/dataset/cosTest.csv", delimiter = ';')
    @ParameterizedTest(name = "{index} - Test cos {0} = {1}")
    void testCos(double input, double expected) {
       assertEquals(expected, trigonometricFunctions.cos(input), DELTA);
    }
 
-   @CsvFileSource(resources = "/dataset/sinTestDataset.csv", delimiter = ';')
+   @CsvFileSource(resources = "/dataset/sinTest.csv", delimiter = ';')
    @ParameterizedTest(name = "{index} - Test sin {0} = {1}")
    void testSin(double input, double expected) {
       assertEquals(expected, trigonometricFunctions.sin(input), DELTA);
    }
 
-   @CsvFileSource(resources = "/dataset/tanTestDataset.csv", delimiter = ';')
+   @CsvFileSource(resources = "/dataset/tanTest.csv", delimiter = ';')
    @ParameterizedTest(name = "{index} - Test tan {0} = {1}")
    void testTan(double input, double expected) {
       assertEquals(expected, trigonometricFunctions.tan(input), DELTA);
    }
 
-   @CsvFileSource(resources = "/dataset/cotTestDataset.csv", delimiter = ';')
+   @CsvFileSource(resources = "/dataset/cotTest.csv", delimiter = ';')
    @ParameterizedTest(name = "{index} - Test cot {0} = {1}")
    void testCot(double input, double expected) {
       assertEquals(expected, trigonometricFunctions.cot(input), DELTA);
    }
 
-   @CsvFileSource(resources = "/dataset/secTestDataset.csv", delimiter = ';')
+   @CsvFileSource(resources = "/dataset/secTest.csv", delimiter = ';')
    @ParameterizedTest(name = "{index} - Test sec {0} = {1}")
    void testSec(double input, double expected) {
       assertEquals(expected, trigonometricFunctions.sec(input), DELTA);
    }
 
-   @CsvFileSource(resources = "/dataset/cscTestDataset.csv", delimiter = ';')
+   @CsvFileSource(resources = "/dataset/cscTest.csv", delimiter = ';')
    @ParameterizedTest(name = "{index} - Test csc {0} = {1}")
    void testCsc(double input, double expected) {
       assertEquals(expected, trigonometricFunctions.csc(input), DELTA);

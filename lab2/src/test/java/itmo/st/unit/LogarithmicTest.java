@@ -18,25 +18,25 @@ public class LogarithmicTest {
       logarithmicFunctions = new LogarithmicFunctions();
    }
 
-   @CsvFileSource(resources = "/dataset/lnTestDataset.csv", delimiter = ';')
+   @CsvFileSource(resources = "/dataset/lnTest.csv", delimiter = ';')
    @ParameterizedTest(name = "{index} - Test ln {0} = {1}")
    void testLn(double input, double expected) {
       assertEquals(expected, logarithmicFunctions.ln(input), DELTA);
    }
 
-   @CsvFileSource(resources = "/dataset/logTestDataset.csv", delimiter = ';')
+   @CsvFileSource(resources = "/dataset/logTest.csv", delimiter = ';')
    @ParameterizedTest(name = "{index} - Test log {0} with base {1} = {2}")
    void testLog(double input, double base, double expected) {
       assertEquals(expected, logarithmicFunctions.log(base, input), DELTA);
    }
 
-   @CsvFileSource(resources = "/dataset/invalidLnTestDataset.csv", delimiter = ';')
+   @CsvFileSource(resources = "/dataset/invalidLnTest.csv", delimiter = ';')
    @ParameterizedTest(name = "{index} - Test ln with invalid input {0}")
    void testLnWithInvalidInput(double input) {
       assertThrows(IllegalArgumentException.class, () -> logarithmicFunctions.ln(input));
    }
 
-   @CsvFileSource(resources = "/dataset/invalidLogTestDataset.csv", delimiter = ';')
+   @CsvFileSource(resources = "/dataset/invalidLogTest.csv", delimiter = ';')
    @ParameterizedTest(name = "{index} - Test log with invalid input {0} and base {1}")
    void testLogWithInvalidInput(double input, double base) {
       assertThrows(IllegalArgumentException.class, () -> logarithmicFunctions.log(base, input));
