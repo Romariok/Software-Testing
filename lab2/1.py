@@ -1,28 +1,28 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import csv
 
-# Данные из файла cscTest.csv
-test_x = [0.5235987755982989, 0.7853981633974483, 1.0471975511965976, 1.5707963267948966, 
-          2.0943951023931953, 2.356194490192345, 2.6179938779914944, 3.665191429188092, 
-          3.9269908169872414, 4.1887902047863905, 4.71238898038469, 5.235987755982989, 
-          5.497787143782138, 5.759586531581287]
+# Чтение данных из CSV файла
+x_values = []
+y_values = []
 
-test_y = [2, 1.4142135623730951, 1.1547005383792515, 1, 1.1547005383792515, 
-          1.4142135623730951, 2, -2, -1.4142135623730951, -1.1547005383792515, 
-          -1, -1.1547005383792515, -1.4142135623730951, -2]
-
-# Создаем непрерывный график функции csc(x)
-x = np.linspace(0.1, 2*np.pi - 0.1, 1000)  # Избегаем точек разрыва
-y = 1 / np.sin(x)  # csc(x) = 1/sin(x)
+with open('output/cos_results.csv', 'r') as file:
+    csv_reader = csv.reader(file, delimiter=';')
+    next(csv_reader)  # Пропускаем заголовок
+    for row in csv_reader:
+        x_values.append(float(row[0]))
+        y_values.append(float(row[1]))
 
 # Создаем график
 plt.figure(figsize=(12, 8))
 
-# Построение непрерывной функции
-plt.plot(x, y, 'b-', label='csc(x) = 1/sin(x)')
+# Построение точек из CSV файла
+plt.scatter(x_values, y_values, color='red', s=30, label='Вычисленные точки')
 
-# Построение тестовых точек
-plt.scatter(test_x, test_y, color='red', s=50, label='Тестовые точки')
+# Построение непрерывной функции косинуса для сравнения
+x_continuous = np.linspace(0, 2*np.pi, 1000)
+y_continuous = np.cos(x_continuous)
+plt.plot(x_continuous, y_continuous, 'b-', label='cos(x)', alpha=0.7)
 
 # Добавляем линию y = 0
 plt.axhline(y=0, color='gray', linestyle='--', alpha=0.7)
@@ -30,15 +30,10 @@ plt.axhline(y=0, color='gray', linestyle='--', alpha=0.7)
 # Добавляем линию x = 0
 plt.axvline(x=0, color='gray', linestyle='--', alpha=0.7)
 
-# Добавляем вертикальные асимптоты
-plt.axvline(x=0, color='red', linestyle='--', alpha=0.3)
-plt.axvline(x=np.pi, color='red', linestyle='--', alpha=0.3)
-plt.axvline(x=2*np.pi, color='red', linestyle='--', alpha=0.3)
-
 # Настройка графика
-plt.title('График функции csc(x) с тестовыми точками')
+plt.title('График функции cos(x)')
 plt.xlabel('x (радианы)')
-plt.ylabel('csc(x)')
+plt.ylabel('cos(x)')
 plt.grid(True, alpha=0.3)
 plt.legend()
 
@@ -49,10 +44,11 @@ x_tick_labels = ['0', 'π/6', 'π/4', 'π/3', 'π/2', '2π/3', '3π/4', '5π/6',
                 '7π/6', '5π/4', '4π/3', '3π/2', '5π/3', '7π/4', '11π/6', '2π']
 plt.xticks(x_ticks, x_tick_labels, rotation=45)
 
-# Устанавливаем пределы осей для лучшего отображения
-plt.xlim(-0.5, 2*np.pi + 0.5)
-plt.ylim(-5, 5)
+# Устанавливаем пределы осей
+plt.xlim(-0.2, 2*np.pi + 0.2)
+plt.ylim(-1.2, 1.2)
 
 # Показываем график
 plt.tight_layout()
+plt.savefig('cos_function_graph.png')  # Сохраняем график в файл
 plt.show()
