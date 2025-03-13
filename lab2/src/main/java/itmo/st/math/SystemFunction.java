@@ -1,5 +1,9 @@
 package itmo.st.math;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
 public class SystemFunction {
     private static final double EPSILON = 1e-5;
     private TrigonometricFunctions trigonometricFunctions;
@@ -139,5 +143,72 @@ public class SystemFunction {
     public double calculateLogPart2(double x) {
         double log2X = logarithmicFunctions.log2(x);
         return log2X - log2X; // Всегда 0
+    }
+
+    /**
+     * Генерирует CSV-файл с результатами вычисления выбранной функции
+     * на заданном интервале с указанным шагом
+     */
+    public void generateCSVForFunction(String functionName, double start, double end, double step, String filePath) {
+        try (PrintWriter writer = new PrintWriter(new File(filePath))) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("x;y\n"); // Заголовок
+            
+            for (double x = start; x <= end; x += step) {
+                double y = 0;
+                try {
+                    // Выбор функции для вычисления
+                    switch (functionName) {
+                        case "sin":
+                            y = trigonometricFunctions.sin(x);
+                            break;
+                        case "cos":
+                            y = trigonometricFunctions.cos(x);
+                            break;
+                        case "tan":
+                            y = trigonometricFunctions.tan(x);
+                            break;
+                        case "cot":
+                            y = trigonometricFunctions.cot(x);
+                            break;
+                        case "sec":
+                            y = trigonometricFunctions.sec(x);
+                            break;
+                        case "csc":
+                            y = trigonometricFunctions.csc(x);
+                            break;
+                        case "ln":
+                            y = logarithmicFunctions.ln(x);
+                            break;
+                        case "log2":
+                            y = logarithmicFunctions.log2(x);
+                            break;
+                        case "log3":
+                            y = logarithmicFunctions.log3(x);
+                            break;
+                        case "log5":
+                            y = logarithmicFunctions.log5(x);
+                            break;
+                        case "log10":
+                            y = logarithmicFunctions.log10(x);
+                            break;
+                        case "system":
+                            y = calculate(x);
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Неизвестная функция: " + functionName);
+                    }
+                    sb.append(x).append(";").append(y).append("\n");
+                } catch (Exception e) {
+                    System.out.println("Функция не определена при x = " + x + ": " + e.getMessage());
+                }
+            }
+            
+            writer.write(sb.toString());
+            System.out.println("CSV-файл создан успешно: " + filePath);
+            
+        } catch (FileNotFoundException e) {
+            System.out.println("Ошибка при создании файла: " + e.getMessage());
+        }
     }
 }
