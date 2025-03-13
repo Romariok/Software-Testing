@@ -1,8 +1,10 @@
 package itmo.st.math;
 
 public class SystemFunction {
+    private static final double EPSILON = 1e-6;
     private TrigonometricFunctions trigonometricFunctions;
     private LogarithmicFunctions logarithmicFunctions;
+    public static final double PI = 3.14159265358979323846;
 
     public SystemFunction(TrigonometricFunctions trigonometricFunctions, LogarithmicFunctions logarithmicFunctions) {
         this.trigonometricFunctions = trigonometricFunctions;
@@ -34,12 +36,20 @@ public class SystemFunction {
      */
     public double calculateTrigonometric(double x) {
         try {
+            if (isMultipleOfPiOver2(x)) {
+                throw new ArithmeticException("Invalid input: x cannot be a multiple of π/2");
+            }
             double part1 = calculateTrigPart1(x);
             double part2 = calculateTrigPart2(x);
             return part1 + part2;
         } catch (ArithmeticException e) {
             throw new ArithmeticException("Error calculating trigonometric function: " + e.getMessage());
         }
+    }
+
+    private boolean isMultipleOfPiOver2(double x) {
+        double factor = x / (PI / 2);
+        return Math.abs(factor - Math.round(factor)) < EPSILON;
     }
 
     /**
@@ -95,6 +105,8 @@ public class SystemFunction {
      */
     public double calculateLogarithmic(double x) {
         try {
+            if (x <= 1)
+                throw new IllegalArgumentException("Function is not defined at " + x);
             double part1 = calculateLogPart1(x);
             double part2 = calculateLogPart2(x);
             double lnX = logarithmicFunctions.ln(x);
