@@ -105,7 +105,7 @@ public class SystemFunction {
      */
     public double calculateLogarithmic(double x) {
         try {
-            if (x <= 1)
+            if (x == 1)
                 throw new IllegalArgumentException("Function is not defined at " + x);
             double part1 = calculateLogPart1(x);
             double part2 = calculateLogPart2(x);
