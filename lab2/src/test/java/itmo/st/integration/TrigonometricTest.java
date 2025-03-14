@@ -63,9 +63,10 @@ public class TrigonometricTest {
    @Test
    void testCotIntegrationWithSinAndCos() {
       when(baseFunctions.cos(ANGLE_60_DEG)).thenReturn(COS_60_DEG);
-
+      
       TrigonometricFunctions spyTrig = spy(trigonometricFunctions);
-      doReturn(SIN_60_DEG).when(spyTrig).sin(ANGLE_60_DEG);
+      when(spyTrig.sin(ANGLE_60_DEG)).thenReturn(SIN_60_DEG);
+      //doReturn(SIN_60_DEG).when(spyTrig).sin(ANGLE_60_DEG);
 
       double expected = COS_60_DEG / SIN_60_DEG;
       assertEquals(expected, spyTrig.cot(ANGLE_60_DEG), DELTA);
