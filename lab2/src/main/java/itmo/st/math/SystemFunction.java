@@ -149,10 +149,10 @@ public class SystemFunction {
      * Генерирует CSV-файл с результатами вычисления выбранной функции
      * на заданном интервале с указанным шагом
      */
-    public void generateCSVForFunction(String functionName, double start, double end, double step, String filePath) {
+    public void generateCSVForFunction(String functionName, double start, double end, double step, String filePath, String delimiter) {
         try (PrintWriter writer = new PrintWriter(new File(filePath))) {
             StringBuilder sb = new StringBuilder();
-            sb.append("x;y\n"); // Заголовок
+            sb.append("x").append(delimiter).append("y\n"); // Заголовок с пользовательским разделителем
             
             for (double x = start; x <= end; x += step) {
                 double y = 0;
@@ -198,7 +198,7 @@ public class SystemFunction {
                         default:
                             throw new IllegalArgumentException("Неизвестная функция: " + functionName);
                     }
-                    sb.append(x).append(";").append(y).append("\n");
+                    sb.append(x).append(delimiter).append(y).append("\n");
                 } catch (Exception e) {
                     System.out.println("Функция не определена при x = " + x + ": " + e.getMessage());
                 }
@@ -210,5 +210,12 @@ public class SystemFunction {
         } catch (FileNotFoundException e) {
             System.out.println("Ошибка при создании файла: " + e.getMessage());
         }
+    }
+
+    /**
+     * Перегруженный метод для обратной совместимости, использует разделитель по умолчанию ";"
+     */
+    public void generateCSVForFunction(String functionName, double start, double end, double step, String filePath) {
+        generateCSVForFunction(functionName, start, end, step, filePath, ";");
     }
 }
