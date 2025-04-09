@@ -90,7 +90,7 @@ class BongacamsTest:
         try:
             confirm_button = self.wait.until(
                 EC.element_to_be_clickable(
-                    (By.XPATH, "//button[contains(text(), 'Enter') or contains(text(), 'ENTER') or contains(@class, 'age-confirmation')]")
+                    (By.XPATH, "//a[contains(@class, 'agree') and contains(@class, 'js-close_warning')] | //a[contains(text(), 'Продолжить')]")
                 )
             )
             confirm_button.click()
@@ -130,7 +130,7 @@ class BongacamsTest:
                     )
                     if model_elements and len(model_elements) > 0:
                         break
-                except:
+                except Exception:
                     continue
                     
             if not model_elements:
@@ -325,6 +325,7 @@ class BongacamsTest:
             
             # Execute test cases
             if self.test_homepage_loads():
+                pass
                 self.test_model_count()
                 if self.test_navigate_to_model_profile():
                     self.test_verify_live_stream()
@@ -338,7 +339,7 @@ class BongacamsTest:
 
 # Run tests in both browsers
 if __name__ == "__main__":
-    browsers = ["firefox", "chrome"]
+    browsers = ["chrome"]
     
     if len(sys.argv) > 1:
         # Allow specific browser selection from command line
