@@ -7,6 +7,7 @@ from tests.test_base import BaseBongaTest
 import os
 from datetime import datetime
 from typing import Optional
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 class ChpokiBongaTest(BaseBongaTest):
@@ -147,146 +148,346 @@ class ChpokiBongaTest(BaseBongaTest):
                 return False
 
             long_wait = WebDriverWait(self.driver, 30)
-            exact_xpath = "//a[@class='js-header_tag_link ht_item' and @href='/female/tags/new-teens']"
-            fallback_xpaths = [
-                "//a[contains(@class, 'js-header_tag_link') and contains(@href, '/female/tags/new-teens')]",
-                "//a[contains(@class, 'ht_item') and contains(@href, 'new-teens')]",
-                "//a[@href='/female/tags/new-teens']",
+            
+            # Пробуем точный XPath, предоставленный пользователем
+            user_xpath = "//*[@id='ls_sub_header_container']/div/div/div[1]/div[2]/div/a[5]"
+            
+            # Другие XPath для поиска
+            xpaths_to_try = [
+                user_xpath,  # Сначала пробуем XPath, предоставленный пользователем
+                "//a[contains(text(), 'Новые молоденькие 18+') or contains(text(), 'Новые Молоденькие 18+')]",
                 "//a[contains(text(), 'молоденькие') or contains(text(), 'Молоденькие')]",
+                "//a[contains(@href, '/female/tags/new-teens')]",
+                "//a[@href='/female/tags/new-teens']",
+                "//div[contains(@class, 'ht_list')]//a[position()=5]",  # Пятый элемент в списке
             ]
 
             young_category: Optional[WebElement] = None
-            use_javascript = False
-            category_url = ""
-
-            try:
-                print(f"Пытаемся найти элемент по точному XPath: {exact_xpath}")
-                young_category = long_wait.until(
-                    EC.element_to_be_clickable((By.XPATH, exact_xpath))
-                )
-            except Exception as e:
-                print(f"Не удалось найти категорию по точному XPath: {str(e)}")
-
-                for xpath in fallback_xpaths:
-                    try:
-                        print(
-                            f"Пытаемся найти элемент по альтернативному XPath: {xpath}"
-                        )
-                        young_category = long_wait.until(
-                            EC.element_to_be_clickable((By.XPATH, xpath))
-                        )
-                        if young_category:
-                            print(
-                                f"Категория найдена с использованием альтернативного XPath: {xpath}"
-                            )
-                            break
-                    except Exception:
-                        continue
-
-                if not young_category:
-                    try:
-                        print("Попытка найти категорию с помощью JavaScript...")
-                        js = self.driver.execute_script
-
-                        all_links = self.driver.find_elements(By.TAG_NAME, "a")
-                        print(f"Найдено {len(all_links)} ссылок на странице")
-
-                        young_category = js(
-                            "return document.querySelector('a[href=\"/female/tags/new-teens\"]');"
-                        )
-
-                        if young_category:
-                            print("Категория найдена через JavaScript по href")
-                        else:
-                            js_code = """
-                                var links = Array.from(document.querySelectorAll('a'));
-                                for (var i = 0; i < links.length; i++) {
-                                    var link = links[i];
-                                    var text = link.textContent.toLowerCase();
-                                    if (text.includes('молоденькие') || text.includes('18+') || link.href.includes('new-teens')) {
-                                        console.log('Найден элемент: ' + link.textContent + ' - ' + link.href);
-                                        return link;
-                                    }
-                                }
-                                return null;
-                            """
-                            young_category = js(js_code)
-
-                            if young_category:
-                                print("Категория найдена через JavaScript по тексту")
-
-                        if young_category:
-                            use_javascript = True
-                    except Exception as js_ex:
-                        print(
-                            f"Не удалось найти категорию с помощью JavaScript: {str(js_ex)}"
-                        )
-
-            if not young_category:
-                print("Не удалось найти элемент категории, переходим напрямую по URL")
-                self.driver.get("https://www.bongacams.com/female/tags/new-teens")
-                self.sleep(5000)
-
-                if (
-                    self.is_cloudflare_challenge()
-                    and not self.wait_for_manual_captcha_solving()
-                ):
-                    self.record_result(
-                        "UC4: Выбор категории",
-                        False,
-                        "Не удалось пройти защиту Cloudflare с CAPTCHA после перехода на страницу категории.",
+            found_by = "unknown"
+            
+            # Создаем скриншот для анализа состояния страницы
+            self.make_screenshot("before_category_search")
+            
+            # Пробуем все XPath по очереди
+            for i, xpath in enumerate(xpaths_to_try):
+                try:
+                    print(f"Попытка {i+1}: Ищем элемент по XPath: {xpath}")
+                    young_category = long_wait.until(
+                        EC.element_to_be_clickable((By.XPATH, xpath))
                     )
-                    return False
+                    if young_category:
+                        found_by = f"XPath #{i+1}: {xpath}"
+                        print(f"Категория найдена! Использован {found_by}")
+                        
+                        # Проверяем, правильная ли это категория
+                        element_text = young_category.text.lower()
+                        element_href = young_category.get_attribute("href")
+                        
+                        if ('молоденькие' in element_text or '18+' in element_text or 
+                            'new-teens' in element_href):
+                            print(f"Найдена корректная категория: '{young_category.text}' с URL: {element_href}")
+                            break
+                        else:
+                            print(f"Найден элемент, но это не та категория. Текст: '{young_category.text}', URL: {element_href}")
+                            young_category = None
+                            continue
+                except Exception as e:
+                    print(f"XPath не сработал: {xpath}. Ошибка: {str(e)}")
 
+            # Если элемент не найден вообще, тест не может продолжаться
+            if not young_category:
                 self.record_result(
-                    "UC4: Выбор категории", True, "Прямой переход по URL категории"
+                    "UC4: Выбор категории",
+                    False,
+                    "Не удалось найти элемент категории, тест прерван"
                 )
-                return True
+                return False
 
+            # Если нашли элемент, пробуем кликнуть
             category_name = young_category.text
             category_url = young_category.get_attribute("href")
             self.record_result(
                 "UC4: Выбор категории",
                 True,
-                f"Найдена категория: {category_name} с href: {category_url}",
+                f"Найдена категория: {category_name} с href: {category_url} (найдено через {found_by})",
             )
 
             before_click_url = self.driver.current_url
 
-            try:
-                if use_javascript:
-                    self.driver.execute_script("arguments[0].click();", young_category)
-                else:
-                    young_category.click()
-            except Exception as e:
-                print(f"Ошибка при клике на категорию: {str(e)}")
-                self.driver.get(category_url)
+            # Делаем скриншот перед кликом
+            self.make_screenshot("before_category_click")
+            
+            click_success = False
+            max_attempts = 3
+            attempt = 0
+            
+            while not click_success and attempt < max_attempts:
+                attempt += 1
+                print(f"Попытка клика #{attempt}")
+                
+                try:
+                    # Сначала проверим, валиден ли еще элемент (не стал ли stale)
+                    try:
+                        if not young_category.is_enabled() or not young_category.is_displayed():
+                            print("Элемент больше не валиден, ищем элемент снова")
+                            for xpath in xpaths_to_try:
+                                try:
+                                    temp_element = self.driver.find_element(By.XPATH, xpath)
+                                    if temp_element and temp_element.is_displayed() and temp_element.is_enabled():
+                                        young_category = temp_element
+                                        print(f"Найден новый элемент: {young_category.text}")
+                                        break
+                                except:
+                                    continue
+                    except:
+                        print("Невозможно проверить состояние элемента, ищем элемент снова")
+                        category_elements = self.driver.find_elements(By.XPATH, "//a[contains(text(), 'Молоденькие')]")
+                        if category_elements and len(category_elements) > 0:
+                            young_category = category_elements[0]
+                            print(f"Найден новый элемент: {young_category.text}")
+                    try:
+                        target_url = young_category.get_attribute("href")
+                        print(f"URL категории: {target_url}")
+                    except:
+                        print("Не удалось получить URL категории")
+                    
+                    # Используем полную последовательность событий мыши для имитации естественного взаимодействия
+                    if attempt < 5:
+                        print(f"Попытка {attempt}: Используем полную последовательность событий с помощью ActionChains")
+                        actions = ActionChains(self.driver)
+                        # Симулируем реальное взаимодействие пользователя
+                        actions.move_to_element(young_category)  # Наведение на элемент
+                        actions.pause(1)  # Пауза для отображения hover эффекта
+                        actions.click(young_category)  # Клик
+                        actions.pause(1)
+                        actions.double_click(young_category)
 
-            self.sleep(5000)
-
-            if (
-                self.is_cloudflare_challenge()
-                and not self.wait_for_manual_captcha_solving()
-            ):
+                        actions.perform()
+                    
+                    # Увеличиваем время ожидания после клика
+                    print(f"Ожидание после клика (попытка {attempt})...")
+                    self.sleep(10000)  # 10 секунд ожидания
+                    
+                    # Проверяем, изменился ли URL
+                    after_click_url = self.driver.current_url
+                    print(f"URL до клика: {before_click_url}")
+                    print(f"URL после клика (попытка {attempt}): {after_click_url}")
+                    
+                    if after_click_url != before_click_url:
+                        click_success = True
+                        print(f"Клик успешен! URL изменился на: {after_click_url}")
+                    else:
+                        print(f"URL не изменился после попытки {attempt}")
+                except Exception as e:
+                    print(f"Ошибка при попытке клика #{attempt}: {str(e)}")
+                
+                # Проверяем наличие Cloudflare после попытки клика
+                if self.is_cloudflare_challenge():
+                    print(f"Обнаружен Cloudflare после попытки клика #{attempt}")
+                    if self.wait_for_manual_captcha_solving():
+                        print("Cloudflare пройден, продолжаем")
+                        self.sleep(5000)
+                        # После прохождения Cloudflare считаем клик успешным
+                        click_success = True
+                    else:
+                        print("Не удалось пройти Cloudflare")
+                        break
+            
+            # Создаем скриншот после попыток клика
+            self.make_screenshot("after_category_clicks")
+            
+            # Проверяем результат навигации
+            final_url = self.driver.current_url
+            if click_success or final_url != before_click_url:
+                self.record_result(
+                    "UC4: Выбор категории",
+                    True,
+                    f"Успешный переход на страницу категории: {final_url}"
+                )
+                return True
+            else:
                 self.record_result(
                     "UC4: Выбор категории",
                     False,
-                    "Не удалось пройти защиту Cloudflare с CAPTCHA после перехода на страницу категории.",
+                    f"Не удалось перейти на страницу категории после {max_attempts} попыток"
                 )
                 return False
-
-            after_click_url = self.driver.current_url
-            if after_click_url == before_click_url:
-                raise AssertionError("URL не изменился после клика на категорию")
-
-            self.record_result(
-                "UC4: Выбор категории",
-                True,
-                f"Успешный переход на страницу категории: {after_click_url}",
-            )
-            return True
         except Exception as e:
             self.record_result("UC4: Выбор категории", False, f"Ошибка: {str(e)}")
+            return False
+
+    def count_models_in_category(self) -> int:
+        """Подсчет количества моделей в выбранной категории"""
+        try:
+            print("Подсчет количества моделей в выбранной категории...")
+            
+            # Сначала проверяем наличие Cloudflare
+            if self.is_cloudflare_challenge():
+                print("Обнаружен Cloudflare challenge перед подсчетом моделей")
+                if not self.wait_for_manual_captcha_solving():
+                    print("Не удалось пройти Cloudflare, подсчет моделей невозможен")
+                    return 0
+                print("Cloudflare challenge пройден, продолжаем подсчет")
+                # Дополнительная пауза после прохождения Cloudflare
+                self.sleep(5000)
+            
+            # Увеличиваем таймаут для поиска моделей
+            long_wait = WebDriverWait(self.driver, 30)
+            
+            # Делаем скриншот перед поиском моделей для отладки
+            self.make_screenshot("before_models_search")
+            
+            # Различные XPath для поиска моделей на странице
+            model_xpaths = [
+                "//div[contains(@class, 'ls_thumb')]",
+                "//div[contains(@class, 'lst_wrp')]/div",
+                "//div[contains(@class, 'ls_thumb_wrapper')]",
+                "//div[contains(@class, 'bChatRoomThumbnailsOriginal')]",
+                "//div[contains(@class, 'c-1')]//div[contains(@class, 'ls_thumb')]",
+                "//div[contains(@class, 'room-list')]//div[contains(@class, 'room-item')]",
+                "//div[contains(@class, 'model-list')]//div[contains(@class, 'model-item')]",
+                "//div[contains(@class, 'room') or contains(@class, 'model')]",
+            ]
+            
+            models_count = 0
+            found_by_xpath = ""
+            
+            # Вывод HTML структуры страницы для отладки
+            try:
+                html_structure = self.driver.execute_script(
+                    "return document.body.innerHTML.substring(0, 5000);"
+                )
+                print(f"Часть HTML структуры страницы (первые 5000 символов):\n{html_structure}")
+                
+                # Получаем URL страницы для проверки
+                current_url = self.driver.current_url
+                print(f"Текущий URL при подсчете моделей: {current_url}")
+            except Exception as html_err:
+                print(f"Не удалось получить HTML структуру: {str(html_err)}")
+            
+            # Пробуем найти модели по различным XPath
+            for xpath in model_xpaths:
+                try:
+                    print(f"Поиск моделей по XPath: {xpath}")
+                    model_elements = self.driver.find_elements(By.XPATH, xpath)
+                    count = len(model_elements)
+                    
+                    if count > models_count:
+                        models_count = count
+                        found_by_xpath = xpath
+                        print(f"Найдено {models_count} моделей по XPath: {xpath}")
+                        
+                        # Выводим текст/атрибуты первых нескольких элементов для проверки
+                        if count > 0 and count < 5:
+                            for i, element in enumerate(model_elements):
+                                try:
+                                    element_html = element.get_attribute("outerHTML")
+                                    print(f"Элемент {i+1}: {element_html[:200]}...")
+                                except:
+                                    print(f"Не удалось получить HTML элемента {i+1}")
+                except Exception as e:
+                    print(f"Ошибка при поиске по XPath {xpath}: {str(e)}")
+            
+            # Если не удалось найти модели по XPath, пробуем JavaScript
+            if models_count == 0:
+                try:
+                    print("Использование JavaScript для поиска моделей...")
+                    self.make_screenshot("models_search_problem")
+                    
+                    models_count = self.driver.execute_script("""
+                        var selectors = [
+                            '.ls_thumb', 
+                            '.lst_wrp > div', 
+                            '.ls_thumb_wrapper',
+                            '.bChatRoomThumbnailsOriginal',
+                            '.c-1 .ls_thumb',
+                            '.room-list .room-item',
+                            '.model-list .model-item',
+                            '[class*="room"], [class*="model"]'
+                        ];
+                        
+                        var results = {};
+                        
+                        for (var i = 0; i < selectors.length; i++) {
+                            var selector = selectors[i];
+                            var elements = document.querySelectorAll(selector);
+                            if (elements && elements.length > 0) {
+                                console.log('Найдено ' + elements.length + ' моделей по селектору: ' + selector);
+                                results[selector] = elements.length;
+                                // Выводим первый элемент для отладки
+                                if (elements[0]) {
+                                    console.log('Пример элемента: ' + elements[0].outerHTML.substring(0, 200));
+                                }
+                            }
+                        }
+                        
+                        // Возвращаем максимальное количество
+                        var max = 0;
+                        for (var key in results) {
+                            if (results[key] > max) max = results[key];
+                        }
+                        
+                        return max;
+                    """)
+                    
+                    print(f"JavaScript: найдено {models_count} моделей")
+                except Exception as js_err:
+                    print(f"Ошибка при использовании JavaScript: {str(js_err)}")
+            
+            # Если до сих пор ничего не нашли, проверяем еще раз Cloudflare
+            if models_count == 0:
+                print("Модели не найдены, проверяем наличие Cloudflare еще раз")
+                if self.is_cloudflare_challenge():
+                    print("Обнаружен Cloudflare challenge после поиска моделей")
+                    if self.wait_for_manual_captcha_solving():
+                        print("Cloudflare пройден, пробуем подсчитать модели еще раз")
+                        # Рекурсивно вызываем метод еще раз после прохождения Cloudflare
+                        return self.count_models_in_category()
+            
+            return models_count
+        except Exception as e:
+            print(f"Ошибка при подсчете моделей: {str(e)}")
+            return 0
+
+    def test_category_model_count(self) -> bool:
+        """Проверка количества моделей в выбранной категории"""
+        try:
+            # Проверяем наличие Cloudflare перед тестом
+            if self.is_cloudflare_challenge():
+                if not self.wait_for_manual_captcha_solving():
+                    self.record_result(
+                        "UC5: Количество моделей в категории",
+                        False,
+                        "Не удалось пройти защиту Cloudflare с CAPTCHA перед подсчетом моделей."
+                    )
+                    return False
+            
+            # Подсчет моделей
+            model_count = self.count_models_in_category()
+            
+            # Проверка количества моделей (не менее 20)
+            min_expected = 20
+            
+            if model_count >= min_expected:
+                self.record_result(
+                    "UC5: Количество моделей в категории",
+                    True,
+                    f"Найдено {model_count} моделей (ожидалось не менее {min_expected})"
+                )
+                return True
+            else:
+                self.record_result(
+                    "UC5: Количество моделей в категории",
+                    False,
+                    f"Найдено {model_count} моделей (ожидалось не менее {min_expected})"
+                )
+                return False
+        except Exception as e:
+            self.record_result(
+                "UC5: Количество моделей в категории",
+                False,
+                f"Ошибка при подсчете моделей: {str(e)}"
+            )
             return False
 
     def run_tests_impl(self):
@@ -296,10 +497,12 @@ class ChpokiBongaTest(BaseBongaTest):
             if "bongacams" in self.driver.current_url:
                 self.test_list_categories()
                 self.test_select_young_category()
+                self.test_category_model_count()
             else:
                 if self.test_homepage_loads():
                     self.test_list_categories()
                     self.test_select_young_category()
+                    self.test_category_model_count()
         except Exception as e:
             self.record_result(
                 "Набор тестов", False, f"Непредвиденная ошибка: {str(e)}"

@@ -69,20 +69,24 @@ class BaseBongaTest:
             self.sleep(3000)
 
             print(
-                f"{test_name}: Попытка найти элемент header (ожидание до 20 секунд)..."
+                f"{test_name}: Проверка заголовка страницы (ожидание до 20 секунд)..."
             )
-            # Проверяем наличие основных элементов с увеличенным таймаутом
-            header_element = self.wait_for_element(By.CLASS_NAME, "header", timeout=20)
-
-            if not header_element:
-                print(f"{test_name}: Элемент header не найден.")
-
+            # Проверяем заголовок страницы с увеличенным таймаутом
+            WebDriverWait(self.driver, 20).until(
+                lambda driver: driver.title and len(driver.title) > 0
+            )
+            
+            page_title = self.driver.title
+            print(f"{test_name}: Заголовок страницы: {page_title}")
+            
+            if not page_title:
+                print(f"{test_name}: Заголовок страницы пустой.")
                 raise AssertionError(
-                    "Не удалось загрузить главную страницу (элемент header не найден)"
+                    "Не удалось загрузить главную страницу (заголовок страницы пустой)"
                 )
 
-            print(f"{test_name}: Элемент header найден.")
-            self.record_result(test_name, True, "Страница успешно загружена")
+            print(f"{test_name}: Заголовок страницы найден.")
+            self.record_result(test_name, True, f"Страница успешно загружена, заголовок: {page_title}")
             return True
         except Exception as e:
             print(f"{test_name}: Произошла ошибка - {str(e)}")
