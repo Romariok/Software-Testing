@@ -1,14 +1,15 @@
 package itmo.bonga;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
+import java.io.File;
+import java.time.Duration;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
-import java.io.File;
-import java.time.Duration;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class DriverManager {
 
@@ -36,7 +37,6 @@ public class DriverManager {
                "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
          options.setExperimentalOption("excludeSwitches", new String[] { "enable-automation", "enable-logging" });
 
-         // Поиск Chrome в стандартных путях установки
          String[] chromePaths = {
                "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
                "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
@@ -58,7 +58,6 @@ public class DriverManager {
          options.addArguments("--start-maximized");
          options.addArguments("--disable-notifications");
 
-         // Поиск Firefox в стандартных путях установки
          String[] firefoxPaths = {
                "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
                "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"
@@ -77,7 +76,6 @@ public class DriverManager {
          throw new IllegalArgumentException("Неподдерживаемый тип браузера: " + browserType);
       }
 
-      // Установка таймаутов
       driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
       driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
 
