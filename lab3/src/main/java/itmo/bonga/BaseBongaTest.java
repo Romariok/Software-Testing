@@ -64,7 +64,7 @@ public abstract class BaseBongaTest {
                               "//a[contains(@class, 'agree') and contains(@class, 'js-close_warning')] | //a[contains(text(), 'Продолжить')]")));
             confirmButton.click();
             recordResult("Проверка возраста", true, "Диалог подтверждения возраста обработан");
-            sleep(2000); // Ожидание исчезновения диалога
+            sleep(2000);
         } catch (Exception e) {
             recordResult("Проверка возраста", true, "Диалог подтверждения возраста не обнаружен");
         }
@@ -73,12 +73,8 @@ public abstract class BaseBongaTest {
     public boolean testHomepageLoads() {
         try {
             driver.get("http://www.bongacams.com/");
-            // Увеличим ожидание загрузки страницы
             sleep(5000);
-
             handleAgeVerification();
-
-            // Дополнительное ожидание после обработки диалога возраста
             sleep(3000);
 
             if (!driver.getTitle().contains("BongaCams")) {

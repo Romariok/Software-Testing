@@ -8,6 +8,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
@@ -20,6 +21,17 @@ public class DriverManager {
     * @return WebDriver
     */
    public static WebDriver initializeDriver(String browserType) {
+      return initializeDriver(browserType, true);
+   }
+   
+   /**
+    * Инициализирует драйвер для указанного браузера с опцией приватного режима
+    *
+    * @param browserType тип браузера ("chrome" или "firefox")
+    * @param incognito включить режим инкогнито/приватный режим
+    * @return WebDriver
+    */
+   public static WebDriver initializeDriver(String browserType, boolean incognito) {
       WebDriver driver;
 
       if (browserType.equalsIgnoreCase("chrome")) {
@@ -35,7 +47,14 @@ public class DriverManager {
          options.addArguments("--window-size=1920,1080");
          options.addArguments(
                "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+               
          options.setExperimentalOption("excludeSwitches", new String[] { "enable-automation", "enable-logging" });
+         
+         // Включаем режим инкогнито для Chrome, если запрошено
+         if (incognito) {
+            options.addArguments("--incognito");
+            System.out.println("Chrome запускается в режиме инкогнито");
+         }
 
          String[] chromePaths = {
                "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
@@ -57,6 +76,17 @@ public class DriverManager {
          FirefoxOptions options = new FirefoxOptions();
          options.addArguments("--start-maximized");
          options.addArguments("--disable-notifications");
+         
+         // Включаем приватный режим для Firefox, если запрошено
+         if (incognito) {
+            options.addArguments("-private");
+            System.out.println("Firefox запускается в приватном режиме");
+            
+            // Дополнительная настройка приватного режима через профиль
+            FirefoxProfile profile = new FirefoxProfile();
+            profile.setPreference("browser.privatebrowsing.autostart", true);
+            options.setProfile(profile);
+         }
 
          String[] firefoxPaths = {
                "C:\\Program Files\\Mozilla Firefox\\firefox.exe",

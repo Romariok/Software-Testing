@@ -59,7 +59,7 @@ public class ChpokiBongaTest extends BaseBongaTest {
      */
     private boolean waitForManualCaptchaSolving() {
         if (!isCloudflareChallenge()) {
-            return true; // CAPTCHA не обнаружена, можно продолжать
+            return true;
         }
         
         makeScreenshot("cloudflare_challenge_manual");
@@ -80,10 +80,8 @@ public class ChpokiBongaTest extends BaseBongaTest {
             return false;
         }
         
-        // Ждем несколько секунд после ввода пользователя
         sleep(3000);
         
-        // Проверяем, исчезла ли CAPTCHA
         if (isCloudflareChallenge()) {
             System.out.println("CAPTCHA все еще обнаружена. Возможно, она не была решена.");
             return false;
@@ -181,7 +179,6 @@ public class ChpokiBongaTest extends BaseBongaTest {
                             break;
                         }
                     } catch (Exception ex) {
-                        // Продолжаем перебор
                     }
                 }
 
@@ -336,9 +333,6 @@ public class ChpokiBongaTest extends BaseBongaTest {
     public void runTests() {
         try {
             setup();
-            
-            // У нас уже должна быть загружена главная страница
-            // Проверяем, что мы на странице BongaCams
             if (!driver.getCurrentUrl().contains("bongacams")) {
                 if (!testHomepageLoads()) {
                     recordResult("Тесты категорий", false, "Не удалось загрузить главную страницу.");
