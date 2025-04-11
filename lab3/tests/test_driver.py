@@ -42,14 +42,7 @@ class DriverManager:
         chrome_options.add_argument("--ignore-ssl-errors")
         chrome_options.add_argument("--start-maximized")
         
-        # Добавляем случайное разрешение экрана
-        resolutions = [
-            (1366, 768),
-            (1440, 900),
-            (1920, 1080),
-            (1536, 864)
-        ]
-        width, height = random.choice(resolutions)
+        width, height = 1920,1080
         chrome_options.add_argument(f"--window-size={width},{height}")
         
         # Добавляем user-agent из списка реальных UA
