@@ -8,10 +8,6 @@ import itmo.bonga.pages.LoginPage;
 import itmo.bonga.pages.MailRuHomePage;
 import itmo.bonga.pages.MailboxPage;
 
-/**
- * Test class that demonstrates the Page Object Model pattern for testing
- * Mail.ru login
- */
 public class PageObjectLoginTest extends BaseTest {
 
     private final String TEST_USERNAME = "zphrmynxajsw@mail-craft.ru";

@@ -14,23 +14,10 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class DriverManager {
 
-   /**
-    * Инициализирует драйвер для указанного браузера
-    * 
-    * @param browserType тип браузера ("chrome" или "firefox")
-    * @return WebDriver
-    */
    public static WebDriver initializeDriver(String browserType) {
       return initializeDriver(browserType, true);
    }
 
-   /**
-    * Инициализирует драйвер для указанного браузера с опцией приватного режима
-    *
-    * @param browserType тип браузера ("chrome" или "firefox")
-    * @param incognito   включить режим инкогнито/приватный режим
-    * @return WebDriver
-    */
    public static WebDriver initializeDriver(String browserType, boolean incognito) {
       WebDriver driver;
 
