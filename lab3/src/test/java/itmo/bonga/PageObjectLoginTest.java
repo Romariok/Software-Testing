@@ -18,21 +18,6 @@ public class PageObjectLoginTest extends BaseTest {
     private final String TEST_PASSWORD = "hCGEAGA8uxXyCZr";
 
     @Test
-    @DisplayName("Test login to Mail.ru using Page Object Model")
-    public void testLoginUsingPOM() {
-        MailRuHomePage homePage = new MailRuHomePage(driver, wait);
-        Assertions.assertTrue(homePage.isPageLoaded(), "Home page should be loaded");
-
-        LoginPage loginPage = homePage.clickLoginButton();
-
-        MailboxPage mailboxPage = loginPage.login(TEST_USERNAME, TEST_PASSWORD);
-
-        Assertions.assertTrue(mailboxPage.isLoggedIn(), "User should be logged in");
-
-        System.out.println("Login test using Page Object Model completed successfully");
-    }
-
-    @Test
     @DisplayName("Test login to Mail.ru using step-by-step approach with Page Object Model")
     public void testLoginStepByStep() {
         MailRuHomePage homePage = new MailRuHomePage(driver, wait);

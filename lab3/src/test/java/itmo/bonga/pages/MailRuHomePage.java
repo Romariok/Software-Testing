@@ -10,7 +10,8 @@ public class MailRuHomePage {
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    private final By loginButtonLocator = By.xpath("/html/body/main/div[2]/div[2]/div[1]/div/div/div[1]/button");
+    private final By loginButtonLocator = By.xpath("//button[text()='Войти']");
+    private final By loginButtonAlternative = By.cssSelector("button.resplash-btn");
 
     public MailRuHomePage(WebDriver driver, WebDriverWait wait) {
         this.driver = driver;
@@ -18,15 +19,23 @@ public class MailRuHomePage {
     }
 
     public LoginPage clickLoginButton() {
-        WebElement loginButton = wait.until(ExpectedConditions.elementToBeClickable(loginButtonLocator));
-        loginButton.click();
+        try {
+            WebElement loginButton = wait.until(ExpectedConditions.elementToBeClickable(loginButtonLocator));
+            loginButton.click();
+        } catch (Exception e) {
+            System.out.println("Primary login button not found, trying alternative: " + e.getMessage());
+            WebElement loginButton = wait.until(ExpectedConditions.elementToBeClickable(loginButtonAlternative));
+            loginButton.click();
+        }
         return new LoginPage(driver, wait);
     }
 
     public boolean isPageLoaded() {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(loginButtonLocator));
-            return true;
+            return wait.until(ExpectedConditions.or(
+                ExpectedConditions.visibilityOfElementLocated(loginButtonLocator),
+                ExpectedConditions.visibilityOfElementLocated(loginButtonAlternative)
+            )) != null;
         } catch (Exception e) {
             return false;
         }
