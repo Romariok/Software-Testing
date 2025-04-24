@@ -18,7 +18,6 @@ public class MailboxPage {
     private final By userProfileLocator = By.cssSelector(".Avatar, .ProfileButton, .UserPic");
     private final By newMessageButtonLocator = By.cssSelector("button[title='Написать'], [title='New message']");
     
-    private final By anyPageTitleLocator = By.tagName("title");
     private final By anyHeaderLocator = By.tagName("header");
 
     public MailboxPage(WebDriver driver, WebDriverWait wait) {
