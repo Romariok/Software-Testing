@@ -33,4 +33,29 @@ public class PageObjectLoginTest extends BaseTest {
 
         System.out.println("Step-by-step login test using Page Object Model completed successfully");
     }
+    
+    @Test
+    @DisplayName("Test sending email to yourself after login")
+    public void testSendEmailToYourself() {
+        MailRuHomePage homePage = new MailRuHomePage(driver, wait);
+        Assertions.assertTrue(homePage.isPageLoaded(), "Home page should be loaded");
+        
+        LoginPage loginPage = homePage.clickLoginButton();
+        loginPage.enterUsername(TEST_USERNAME);
+        loginPage.clickNextButton();
+        loginPage.enterPassword(TEST_PASSWORD);
+        
+        MailboxPage mailboxPage = loginPage.clickSubmitButton();
+        Assertions.assertTrue(mailboxPage.isLoggedIn(), "User should be logged in");
+        
+        boolean burgerClicked = mailboxPage.clickBurgerMenu();
+        Assertions.assertTrue(burgerClicked, "Burger menu button should be clickable");
+        boolean writeToYourselfClicked = mailboxPage.clickWriteToYourself();
+        Assertions.assertTrue(writeToYourselfClicked, "Write to yourself option should be clickable");
+        
+        boolean editorDisplayed = mailboxPage.isEmailEditorDisplayed();
+        Assertions.assertTrue(editorDisplayed, "Email editor should be displayed");
+        
+        System.out.println("Send email to yourself test completed successfully");
+    }
 }
