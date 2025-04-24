@@ -12,6 +12,7 @@ public class PageObjectLoginTest extends BaseTest {
 
     private final String TEST_USERNAME = "zphrmynxajsw@mail-craft.ru";
     private final String TEST_PASSWORD = "hCGEAGA8uxXyCZr";
+    private final String EMAIL_SUBJECT = "chpoki chpoki";
 
     @Test
     @DisplayName("Test login to Mail.ru using step-by-step approach with Page Object Model")
@@ -50,11 +51,26 @@ public class PageObjectLoginTest extends BaseTest {
         
         boolean burgerClicked = mailboxPage.clickBurgerMenu();
         Assertions.assertTrue(burgerClicked, "Burger menu button should be clickable");
+        
         boolean writeToYourselfClicked = mailboxPage.clickWriteToYourself();
         Assertions.assertTrue(writeToYourselfClicked, "Write to yourself option should be clickable");
         
         boolean editorDisplayed = mailboxPage.isEmailEditorDisplayed();
         Assertions.assertTrue(editorDisplayed, "Email editor should be displayed");
+        
+        boolean subjectEntered = mailboxPage.enterEmailSubject(EMAIL_SUBJECT);
+        Assertions.assertTrue(subjectEntered, "Should be able to enter email subject");
+        
+        boolean sendButtonClicked = mailboxPage.clickSendButton();
+        Assertions.assertTrue(sendButtonClicked, "Send button should be clickable");
+        
+        if (mailboxPage.isEmptyEmailDialogDisplayed()) {
+            boolean confirmSendClicked = mailboxPage.confirmSendEmptyEmail();
+            Assertions.assertTrue(confirmSendClicked, "Should be able to confirm sending empty email");
+        }
+        
+        boolean confirmationDisplayed = mailboxPage.isEmailSentConfirmationDisplayed();
+        Assertions.assertTrue(confirmationDisplayed, "Email sent confirmation should be displayed");
         
         System.out.println("Send email to yourself test completed successfully");
     }
