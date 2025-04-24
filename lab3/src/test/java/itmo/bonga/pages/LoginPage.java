@@ -7,12 +7,15 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class LoginPage {
-    private WebDriver driver;
-    private WebDriverWait wait;
-    private final By usernameInputLocator = By.cssSelector("input[name='username']");
-    private final By nextButtonLocator = By.cssSelector("button[data-test-id='next-button']");
-    private final By passwordInputLocator = By.cssSelector("input[name='password']");
-    private final By submitButtonLocator = By.cssSelector("button[data-test-id='submit-button']");
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+    private final By usernameInputLocator = By.xpath(
+            "/html/body/div[1]/div[2]/div/div/div/div[2]/div/form/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div/input");
+    private final By nextButtonLocator = By.xpath("//*[@id=\"kjLElvf\"]/div/div[3]/div/div/div[1]/button");
+    private final By passwordInputLocator = By.xpath(
+            "/html/body/div[1]/div[2]/div/div/div/div[2]/div/form/div[2]/div[4]/div[4]/div[3]/div[1]/div[5]/div[1]/div/div[2]/div/div[2]/div/div/div/input");
+    private final By submitButtonLocator = By.xpath(
+            "/html/body/div[1]/div[2]/div/div/div/div[2]/div/form/div[2]/div[4]/div[4]/div[3]/div[1]/div[5]/div[1]/div/div[3]/div/div/div[1]/button");
 
     public LoginPage(WebDriver driver, WebDriverWait wait) {
         this.driver = driver;
@@ -31,7 +34,6 @@ public class LoginPage {
         WebElement nextButton = wait.until(ExpectedConditions.elementToBeClickable(nextButtonLocator));
         nextButton.click();
 
-        // Wait for password field to appear
         wait.until(ExpectedConditions.visibilityOfElementLocated(passwordInputLocator));
         return this;
     }

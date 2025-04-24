@@ -6,8 +6,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class MailboxPage {
-    private WebDriver driver;
-    private WebDriverWait wait;
+    private final WebDriver driver;
+    private final WebDriverWait wait;
     private final By mailAppHeaderLocator = By.cssSelector(".mail-App-Header");
     private final By composeButtonLocator = By.cssSelector("[data-test-id='compose-button']");
 
