@@ -8,7 +8,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.interactions.Actions;
 
 public class MailboxPage {
     private final WebDriver driver;
@@ -152,6 +151,53 @@ public class MailboxPage {
                     "//*[@id='app-canvas']/div/div[1]/div[1]/div/div[2]/div/div[7]/div/div/div/div/div/div[3]/div/div/div[3]/div[1]/div/span"),
             By.xpath(
                     "//div[contains(@class, 'button2__txt') and contains(text(), 'Удалить')]/ancestor::span[contains(@class, 'button2')]"));
+
+    private final By filterButtonXPath = By.cssSelector(".filters-control");
+    private final By unreadFilterOptionXPath = By.cssSelector(
+            "#app-canvas > div > div.application-mail > div.application-mail__overlay.js-promo-id_new-toolbar > div > div.application-mail__layout.application-mail__layout_main > div > div.layout__main-frame > div > div > div > div > div > div.new-menu > div > div:nth-child(2) > div > div > div > div.select__items.select__items_expanded.select__items_align-right > div > div:nth-child(2)");
+    private final By selectAllButtonXPath = By
+            .xpath("//span[contains(@class, 'button2__explanation') and contains(text(), 'Выделить все')]");
+    private final By markAsReadButtonXPath = By
+            .xpath("//div[contains(@class, 'button2__txt') and contains(text(), 'Отметить все прочитанными')]");
+    private final By emailCountLabelXPath = By.cssSelector(".dataset__counter");
+
+    private final List<By> filterButtonFallbacks = Arrays.asList(
+            filterButtonXPath,
+            By.cssSelector(".filters-control_pure"),
+            By.cssSelector(".filters-control__text"),
+            By.xpath("//div[contains(@class, 'filters-control')]"));
+
+    private final List<By> unreadFilterOptionFallbacks = Arrays.asList(
+            unreadFilterOptionXPath,
+            By.cssSelector("div.list-item.list-item_hover-support.list-item_markable"),
+            By.cssSelector("div.select__items_expanded div:nth-child(2)"),
+            By.cssSelector(".select__items_expanded .list-item"),
+            By.cssSelector(".list-item_markable"),
+            By.xpath(
+                    "//div[contains(@class, 'list-item')][.//span[contains(@class, 'list-item__text')][contains(text(), 'Непрочитанные')]]"),
+            By.xpath("//span[contains(@class, 'list-item__text')][contains(text(), 'Непрочитанные')]/parent::div"),
+            By.xpath("//div[contains(@class, 'select__items_expanded')]//div[contains(@class, 'list-item')]"),
+            By.xpath("//div[contains(@class, 'select__items')]//span[text()=' Непрочитанные ']/.."));
+
+    private final List<By> selectAllButtonFallbacks = Arrays.asList(
+            selectAllButtonXPath,
+            By.cssSelector(".button2__ico .ico_16-select-all"),
+            By.xpath(
+                    "//span[contains(@class, 'button2__explanation') and contains(text(), 'Выделить все')]/ancestor::span"),
+            By.xpath("//span[contains(text(), 'Выделить все')]"));
+
+    private final List<By> markAsReadButtonFallbacks = Arrays.asList(
+            markAsReadButtonXPath,
+            By.cssSelector(".button2__ico .ico_16-status\\:read"),
+            By.xpath("//div[contains(text(), 'Отметить все прочитанными')]/ancestor::span"),
+            By.xpath(
+                    "//span[contains(@class, 'button2__wrapper')]//div[contains(text(), 'Отметить все прочитанными')]"));
+
+    private final List<By> emailCountLabelFallbacks = Arrays.asList(
+            emailCountLabelXPath,
+            By.cssSelector(".dataset__count"),
+            By.xpath("//div[contains(@class, 'dataset__counter')]"),
+            By.xpath("//div[contains(@class, 'dataset__count')]"));
 
     public MailboxPage(WebDriver driver, WebDriverWait wait) {
         this.driver = driver;
@@ -627,5 +673,130 @@ public class MailboxPage {
 
         System.out.println("Failed to delete email with all locator strategies");
         return false;
+    }
+
+    public boolean clickFilterButton() {
+        for (By locator : filterButtonFallbacks) {
+            try {
+                System.out.println("Attempting to find filter button with locator: " + locator);
+                WebElement filterButton = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                filterButton.click();
+                System.out.println("Successfully clicked on filter button");
+                return true;
+            } catch (Exception e) {
+                System.out.println("Failed to find filter button with locator: " + locator);
+            }
+        }
+
+        System.out.println("Failed to find filter button with all locator strategies");
+        return false;
+    }
+
+    public boolean clickUnreadFilterOption() {
+        for (By locator : unreadFilterOptionFallbacks) {
+            try {
+                System.out.println("Attempting to find unread filter option with locator: " + locator);
+                WebElement unreadOption = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                unreadOption.click();
+                System.out.println("Successfully clicked on unread filter option");
+                return true;
+            } catch (Exception e) {
+                System.out.println("Failed to find unread filter option with locator: " + locator);
+            }
+        }
+
+        System.out.println("Failed to find unread filter option with all locator strategies");
+        return false;
+    }
+
+    public boolean clickSelectAllButton() {
+        for (By locator : selectAllButtonFallbacks) {
+            try {
+                System.out.println("Attempting to find select all button with locator: " + locator);
+                WebElement selectAllButton = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                selectAllButton.click();
+                System.out.println("Successfully clicked on select all button");
+                return true;
+            } catch (Exception e) {
+                System.out.println("Failed to find select all button with locator: " + locator);
+            }
+        }
+
+        System.out.println("Failed to find select all button with all locator strategies");
+        return false;
+    }
+
+    public boolean clickMarkAsReadButton() {
+        for (By locator : markAsReadButtonFallbacks) {
+            try {
+                System.out.println("Attempting to find mark as read button with locator: " + locator);
+                WebElement markAsReadButton = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                markAsReadButton.click();
+                System.out.println("Successfully clicked on mark as read button");
+                return true;
+            } catch (Exception e) {
+                System.out.println("Failed to find mark as read button with locator: " + locator);
+            }
+        }
+
+        System.out.println("Failed to find mark as read button with all locator strategies");
+        return false;
+    }
+
+    public int getUnreadEmailCount() {
+        return countEmailsInCurrentFolder();
+    }
+
+    public boolean filterByUnread() {
+        boolean filterButtonClicked = clickFilterButton();
+        if (!filterButtonClicked) {
+            System.out.println("Could not click filter button, test will fail");
+            return false;
+        }
+
+        boolean unreadOptionClicked = clickUnreadFilterOption();
+        if (!unreadOptionClicked) {
+            System.out.println("Could not click unread filter option, test will fail");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean markAllEmailsAsRead() {
+        boolean selectAllClicked = clickSelectAllButton();
+        if (!selectAllClicked) {
+            System.out.println("Could not click select all button, test will fail");
+            return false;
+        }
+
+        boolean markAsReadClicked = clickMarkAsReadButton();
+        if (!markAsReadClicked) {
+            System.out.println("Could not click mark as read button, test will fail");
+            return false;
+        }
+        try {
+            wait.until(driver -> countEmailsInCurrentFolder() == 0);
+            System.out.println("Successfully waited for all emails to be marked as read");
+            return true;
+        } catch (Exception e) {
+            System.out.println("Failed to wait for all emails to be marked as read: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean waitForNoUnreadEmails(int timeout) {
+        try {
+            WebDriverWait longWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(timeout));
+            longWait.until(driver -> {
+                int count = countEmailsInCurrentFolder();
+                System.out.println("Current email count during wait: " + count);
+                return count == 0;
+            });
+            System.out.println("Successfully verified no unread emails left");
+            return true;
+        } catch (Exception e) {
+            System.out.println("Failed to verify no unread emails left: " + e.getMessage());
+            return false;
+        }
     }
 }

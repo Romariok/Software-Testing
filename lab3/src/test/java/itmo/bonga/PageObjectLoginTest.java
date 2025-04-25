@@ -165,4 +165,45 @@ public class PageObjectLoginTest extends BaseTest {
 
         System.out.println("Open email and verify subject test completed successfully");
     }
+
+    @Test
+    @DisplayName("Test filtering unread emails, selecting all, and marking them as read")
+    public void testFilterUnreadAndMarkAsRead() {
+        MailRuHomePage homePage = new MailRuHomePage(driver, wait);
+        Assertions.assertTrue(homePage.isPageLoaded(), "Home page should be loaded");
+
+        LoginPage loginPage = homePage.clickLoginButton();
+        loginPage.enterUsername(TEST_USERNAME);
+        loginPage.clickNextButton();
+        loginPage.enterPassword(TEST_PASSWORD);
+
+        MailboxPage mailboxPage = loginPage.clickSubmitButton();
+        Assertions.assertTrue(mailboxPage.isLoggedIn(), "User should be logged in");
+
+        boolean unreadFilterApplied = mailboxPage.filterByUnread();
+        Assertions.assertTrue(unreadFilterApplied, "Should be able to apply unread filter");
+        boolean initialWait = mailboxPage.waitForNoUnreadEmails(10);
+        if (initialWait) {
+            System.out.println("No unread emails found after filtering - test already passed");
+        } else {
+            int unreadCountBefore = mailboxPage.getUnreadEmailCount();
+            System.out.println("Number of unread emails before marking as read: " + unreadCountBefore);
+
+            if (unreadCountBefore > 0) {
+                boolean markedAsRead = mailboxPage.markAllEmailsAsRead();
+                Assertions.assertTrue(markedAsRead, "Should be able to mark all emails as read");
+
+                boolean noUnreadEmails = mailboxPage.waitForNoUnreadEmails(15);
+                Assertions.assertTrue(noUnreadEmails, "All emails should be marked as read");
+
+                int unreadCountAfter = mailboxPage.getUnreadEmailCount();
+                System.out.println("Number of unread emails after marking as read: " + unreadCountAfter);
+                Assertions.assertEquals(0, unreadCountAfter, "There should be no unread emails left");
+            } else {
+                System.out.println("No unread emails to mark as read");
+            }
+        }
+
+        System.out.println("Filter unread and mark as read test completed successfully");
+    }
 }
