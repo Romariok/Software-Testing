@@ -129,7 +129,6 @@ public class PageObjectLoginTest extends BaseTest {
 
         boolean countIncreased = mailboxPage.verifySentEmailCount(trashEmailsCountBefore);
         Assertions.assertTrue(countIncreased, "Number of emails in Trash should increase after deletion");
-
         System.out.println("Delete email and verify trash test completed successfully");
     }
 
