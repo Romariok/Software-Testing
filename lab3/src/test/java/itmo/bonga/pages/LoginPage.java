@@ -151,7 +151,6 @@ public class LoginPage {
             }
         }
 
-        // Wait for password field with multiple attempts
         waitForPasswordField();
 
         return this;

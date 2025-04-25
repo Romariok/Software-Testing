@@ -49,6 +49,16 @@ public class PageObjectLoginTest extends BaseTest {
         MailboxPage mailboxPage = loginPage.clickSubmitButton();
         Assertions.assertTrue(mailboxPage.isLoggedIn(), "User should be logged in");
         
+        boolean navigatedToSent = mailboxPage.navigateToSentFolder();
+        Assertions.assertTrue(navigatedToSent, "Should be able to navigate to Sent folder");
+        
+        int sentEmailsCountBefore = mailboxPage.countEmailsInCurrentFolder();
+        Assertions.assertTrue(sentEmailsCountBefore >= 0, "Should be able to count emails in Sent folder");
+        System.out.println("Number of sent emails before sending: " + sentEmailsCountBefore);
+        
+        boolean navigatedToInbox = mailboxPage.navigateToInbox();
+        Assertions.assertTrue(navigatedToInbox, "Should be able to navigate back to Inbox");
+        
         boolean burgerClicked = mailboxPage.clickBurgerMenu();
         Assertions.assertTrue(burgerClicked, "Burger menu button should be clickable");
         
@@ -71,6 +81,15 @@ public class PageObjectLoginTest extends BaseTest {
         
         boolean confirmationDisplayed = mailboxPage.isEmailSentConfirmationDisplayed();
         Assertions.assertTrue(confirmationDisplayed, "Email sent confirmation should be displayed");
+        
+        boolean confirmationClosed = mailboxPage.closeEmailSentConfirmation();
+        Assertions.assertTrue(confirmationClosed, "Should be able to close the confirmation popup");
+        
+        boolean navigatedToSentAgain = mailboxPage.navigateToSentFolder();
+        Assertions.assertTrue(navigatedToSentAgain, "Should be able to navigate to Sent folder after sending");
+        
+        boolean countIncreased = mailboxPage.verifySentEmailCount(sentEmailsCountBefore);
+        Assertions.assertTrue(countIncreased, "Number of sent emails should increase after sending");
         
         System.out.println("Send email to yourself test completed successfully");
     }

@@ -29,9 +29,15 @@ public class MailboxPage {
     private final By emptyEmailDialogXPath = By.xpath("/html/body/div[18]/div/div/div[2]/h3");
     private final By confirmSendButtonXPath = By.xpath("/html/body/div[18]/div/div/div[2]/button[1]");
 
+    private final By closeConfirmationButtonXPath = By.cssSelector(".button2.button2_has-ico.button2_close");
+
     private final By emailInListXPath = By.cssSelector("a.llc.js-letter-list-item");
     private final By emailTitleInListXPath = By.cssSelector(".ll-sj__normal");
     private final By emailTitleInOpenMailXPath = By.cssSelector(".thread-subject");
+
+    private final By sentFolderXPath = By.cssSelector("a[href='/sent/?']");
+    private final By inboxFolderXPath = By.cssSelector("a[href='/inbox/?']");
+    private final By emailCountInFolder = By.cssSelector("a.llc.js-letter-list-item");
 
     private final List<By> burgerMenuFallbacks = Arrays.asList(
             burgerMenuButtonXPath,
@@ -83,6 +89,14 @@ public class MailboxPage {
             By.xpath("//span[@class='vkuiButton__content' and text()='Отправить']/ancestor::button"),
             By.xpath("//div[18]/div/div/div[2]/button[1]"));
 
+    private final List<By> closeConfirmationButtonFallbacks = Arrays.asList(
+            closeConfirmationButtonXPath,
+            By.cssSelector(".button2_close"),
+            By.cssSelector("[title='Закрыть']"),
+            By.xpath("//span[@title='Закрыть']/ancestor::span[contains(@class, 'button2')]"),
+            By.xpath("//span[contains(@class, 'button2_close')]"),
+            By.xpath("//svg[contains(@class, 'ico_16-close')]/ancestor::span[contains(@class, 'button2')]"));
+
     private final List<By> emailInListFallbacks = Arrays.asList(
             emailInListXPath,
             By.cssSelector("a.llc"),
@@ -103,6 +117,19 @@ public class MailboxPage {
             By.cssSelector(".thread__subject"),
             By.cssSelector(".thread__subject-line"),
             By.xpath("//*[contains(@class, 'thread-subject')]"));
+
+    private final List<By> sentFolderFallbacks = Arrays.asList(
+            sentFolderXPath,
+            By.xpath("//a[contains(@href, '/sent')]"),
+            By.xpath(
+                    "//div[contains(@class, 'nav__folder-name__txt') and contains(text(), 'Отправленные')]/ancestor::a"),
+            By.cssSelector("[data-folder-link-id='500000']"));
+
+    private final List<By> inboxFolderFallbacks = Arrays.asList(
+            inboxFolderXPath,
+            By.xpath("//a[contains(@href, '/inbox')]"),
+            By.xpath("//div[contains(@class, 'nav__folder-name__txt') and contains(text(), 'Входящие')]/ancestor::a"),
+            By.cssSelector("[data-folder-link-id='0']"));
 
     public MailboxPage(WebDriver driver, WebDriverWait wait) {
         this.driver = driver;
@@ -432,5 +459,96 @@ public class MailboxPage {
         }
 
         return matches;
+    }
+
+    public boolean navigateToSentFolder() {
+        for (By locator : sentFolderFallbacks) {
+            try {
+                System.out.println("Attempting to find Sent folder with locator: " + locator);
+                WebElement sentFolder = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                sentFolder.click();
+
+                wait.until(ExpectedConditions.urlContains("/sent/"));
+                System.out.println("Successfully navigated to Sent folder");
+                return true;
+            } catch (Exception e) {
+                System.out.println("Failed to find Sent folder with locator: " + locator);
+            }
+        }
+
+        System.out.println("Failed to navigate to Sent folder with all locator strategies");
+        return false;
+    }
+
+    public boolean navigateToInbox() {
+        for (By locator : inboxFolderFallbacks) {
+            try {
+                System.out.println("Attempting to find Inbox folder with locator: " + locator);
+                WebElement inboxFolder = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                inboxFolder.click();
+
+                wait.until(ExpectedConditions.urlContains("/inbox/"));
+                System.out.println("Successfully navigated to Inbox folder");
+                return true;
+            } catch (Exception e) {
+                System.out.println("Failed to find Inbox folder with locator: " + locator);
+            }
+        }
+
+        System.out.println("Failed to navigate to Inbox folder with all locator strategies");
+        return false;
+    }
+
+    public int countEmailsInCurrentFolder() {
+        try {
+            List<WebElement> emails = driver.findElements(emailCountInFolder);
+            int count = emails.size();
+            System.out.println("Found " + count + " emails in the current folder");
+            return count;
+        } catch (Exception e) {
+            System.out.println("Failed to count emails: " + e.getMessage());
+            return -1;
+        }
+    }
+
+    public boolean verifySentEmailCount(int beforeCount) {
+        try {
+            int afterCount = countEmailsInCurrentFolder();
+            if (afterCount == beforeCount + 1) {
+                System.out.println("Email count increased from " + beforeCount + " to " + afterCount);
+                return true;
+            } else {
+                System.out.println("Email count did not increase. Before: " + beforeCount + ", After: " + afterCount);
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to verify sent email count: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean closeEmailSentConfirmation() {
+        for (By locator : closeConfirmationButtonFallbacks) {
+            try {
+                System.out.println("Attempting to find close button with locator: " + locator);
+                WebElement closeButton = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                closeButton.click();
+                System.out.println("Successfully clicked close button on confirmation popup");
+
+                try {
+                    wait.until(ExpectedConditions.invisibilityOfElementLocated(confirmationMessageXPath));
+                    System.out.println("Confirmation popup is closed");
+                } catch (Exception e) {
+                    System.out.println("Warning: Could not confirm popup was closed, but continuing");
+                }
+
+                return true;
+            } catch (Exception e) {
+                System.out.println("Failed to find close button with locator: " + locator);
+            }
+        }
+
+        System.out.println("Failed to find close button with all locator strategies");
+        return false;
     }
 }
