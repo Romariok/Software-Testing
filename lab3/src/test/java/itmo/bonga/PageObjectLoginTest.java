@@ -74,4 +74,37 @@ public class PageObjectLoginTest extends BaseTest {
         
         System.out.println("Send email to yourself test completed successfully");
     }
+    
+    @Test
+    @DisplayName("Test opening an email and verifying its subject")
+    public void testOpenEmailAndVerifySubject() {
+        MailRuHomePage homePage = new MailRuHomePage(driver, wait);
+        Assertions.assertTrue(homePage.isPageLoaded(), "Home page should be loaded");
+        
+        LoginPage loginPage = homePage.clickLoginButton();
+        loginPage.enterUsername(TEST_USERNAME);
+        loginPage.clickNextButton();
+        loginPage.enterPassword(TEST_PASSWORD);
+        
+        MailboxPage mailboxPage = loginPage.clickSubmitButton();
+        Assertions.assertTrue(mailboxPage.isLoggedIn(), "User should be logged in");
+        
+        String emailSubjectBeforeClick = mailboxPage.getFirstEmailSubject();
+        System.out.println("Subject of the first email before clicking: " + emailSubjectBeforeClick);
+        boolean emailClicked = mailboxPage.clickFirstEmail();
+        Assertions.assertTrue(emailClicked, "Should be able to click on an email");
+
+        String clickedEmailSubject = mailboxPage.getLastClickedEmailSubject();
+        Assertions.assertNotNull(clickedEmailSubject, "Clicked email subject should not be null");
+        System.out.println("Subject saved when clicking: " + clickedEmailSubject);
+
+        String openedEmailSubject = mailboxPage.getOpenedEmailSubject();
+        Assertions.assertNotNull(openedEmailSubject, "Opened email subject should not be null");
+        System.out.println("Subject from opened email: " + openedEmailSubject);
+
+        boolean subjectsMatch = mailboxPage.verifyOpenedEmailMatchesClicked();
+        Assertions.assertTrue(subjectsMatch, "The subjects should match");
+        
+        System.out.println("Open email and verify subject test completed successfully");
+    }
 }
