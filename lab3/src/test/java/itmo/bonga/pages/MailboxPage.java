@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.interactions.Actions;
 
 public class MailboxPage {
     private final WebDriver driver;
@@ -38,6 +39,11 @@ public class MailboxPage {
     private final By sentFolderXPath = By.cssSelector("a[href='/sent/?']");
     private final By inboxFolderXPath = By.cssSelector("a[href='/inbox/?']");
     private final By emailCountInFolder = By.cssSelector("a.llc.js-letter-list-item");
+
+    private final By trashFolderXPath = By.cssSelector("a[href='/trash/?']");
+    private final By deleteButtonXPath = By.cssSelector(".button2_delete");
+
+    private final By emailAvatarXPath = By.cssSelector(".ll-av__img");
 
     private final List<By> burgerMenuFallbacks = Arrays.asList(
             burgerMenuButtonXPath,
@@ -130,6 +136,22 @@ public class MailboxPage {
             By.xpath("//a[contains(@href, '/inbox')]"),
             By.xpath("//div[contains(@class, 'nav__folder-name__txt') and contains(text(), 'Входящие')]/ancestor::a"),
             By.cssSelector("[data-folder-link-id='0']"));
+
+    private final List<By> trashFolderFallbacks = Arrays.asList(
+            trashFolderXPath,
+            By.xpath("//a[contains(@href, '/trash')]"),
+            By.xpath("//div[contains(@class, 'nav__folder-name__txt') and contains(text(), 'Корзина')]/ancestor::a"),
+            By.cssSelector("[data-folder-link-id='500002']"));
+
+    private final List<By> deleteButtonFallbacks = Arrays.asList(
+            deleteButtonXPath,
+            By.cssSelector(".button2_delete"),
+            By.xpath("//span[contains(@class, 'button2_delete')]"),
+            By.xpath("//span[contains(@title, 'Удалить')]"),
+            By.xpath(
+                    "//*[@id='app-canvas']/div/div[1]/div[1]/div/div[2]/div/div[7]/div/div/div/div/div/div[3]/div/div/div[3]/div[1]/div/span"),
+            By.xpath(
+                    "//div[contains(@class, 'button2__txt') and contains(text(), 'Удалить')]/ancestor::span[contains(@class, 'button2')]"));
 
     public MailboxPage(WebDriver driver, WebDriverWait wait) {
         this.driver = driver;
@@ -549,6 +571,61 @@ public class MailboxPage {
         }
 
         System.out.println("Failed to find close button with all locator strategies");
+        return false;
+    }
+
+    public boolean navigateToTrashFolder() {
+        for (By locator : trashFolderFallbacks) {
+            try {
+                System.out.println("Attempting to find Trash folder with locator: " + locator);
+                WebElement trashFolder = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                trashFolder.click();
+
+                wait.until(ExpectedConditions.urlContains("/trash/"));
+                System.out.println("Successfully navigated to Trash folder");
+                return true;
+            } catch (Exception e) {
+                System.out.println("Failed to find Trash folder with locator: " + locator);
+            }
+        }
+
+        System.out.println("Failed to navigate to Trash folder with all locator strategies");
+        return false;
+    }
+
+    public boolean selectFirstEmail() {
+        try {
+            WebElement emailElement = wait.until(ExpectedConditions.presenceOfElementLocated(emailInListXPath));
+            System.out.println("Clicking directly on the email element");
+            emailElement.click();
+            return true;
+        } catch (Exception e) {
+            try {
+                WebElement avatarElement = wait.until(ExpectedConditions.visibilityOfElementLocated(emailAvatarXPath));
+                System.out.println("Clicking on the email avatar");
+                avatarElement.click();
+                return true;
+            } catch (Exception avatarEx) {
+                System.out.println("Failed to select email: " + e.getMessage());
+                return false;
+            }
+        }
+    }
+
+    public boolean deleteSelectedEmail() {
+        for (By locator : deleteButtonFallbacks) {
+            try {
+                System.out.println("Attempting to find delete button with locator: " + locator);
+                WebElement deleteButton = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                deleteButton.click();
+                System.out.println("Successfully clicked delete button");
+                return true;
+            } catch (Exception e) {
+                System.out.println("Failed to find delete button with locator: " + locator);
+            }
+        }
+
+        System.out.println("Failed to delete email with all locator strategies");
         return false;
     }
 }
