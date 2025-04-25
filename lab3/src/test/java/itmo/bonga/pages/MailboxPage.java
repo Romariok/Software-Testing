@@ -255,13 +255,6 @@ public class MailboxPage {
     }
 
     public boolean confirmSendEmptyEmail() {
-        // Add a small wait to ensure the dialog is fully loaded
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            System.out.println("Sleep interrupted: " + e.getMessage());
-        }
-
         for (By locator : confirmSendButtonFallbacks) {
             try {
                 System.out.println("Attempting to find confirm send button with locator: " + locator);
