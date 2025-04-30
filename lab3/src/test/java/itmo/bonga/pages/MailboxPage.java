@@ -43,8 +43,6 @@ public class MailboxPage {
     private final By trashFolderXPath = By.cssSelector("a[href='/trash/?']");
     private final By deleteButtonXPath = By.cssSelector(".button2_delete");
 
-    private final By emailAvatarOriginalXPath = By.xpath(
-            "//*[@id=\"app-canvas\"]/div/div[1]/div[1]/div/div[2]/div/div[5]/div/div/div/div/div/div[4]/div/div/div/div[1]/div/div/a[1]/div[3]/div/button/div/div/span");
 
     private final By emailCheckboxXPath = By.cssSelector(".ll-av__checkbox");
     private final By emailAvatarContainerXPath = By.cssSelector(".ll-av__container");
